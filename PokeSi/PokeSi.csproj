@@ -76,6 +76,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Input.cs" />
+    <Compile Include="Map\FlowerTile.cs" />
+    <Compile Include="Map\GrassTile.cs" />
+    <Compile Include="Map\LocatedTile.cs" />
+    <Compile Include="Map\Tile.cs" />
+    <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
@@ -83,8 +88,14 @@
     <Compile Include="Screens\Screen.cs" />
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Screens\Transition.cs" />
+    <Compile Include="Screens\WorldScreen.cs" />
+    <Compile Include="Sprites\SpriteSheet.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Content\tiles.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <None Include="Content\background.bmp">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

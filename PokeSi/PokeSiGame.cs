@@ -11,6 +11,7 @@ using SharpDX.Toolkit.Audio;
 using SharpDX.Toolkit.Input;
 using PokeSi.Screens;
 using BlendState = SharpDX.Toolkit.Graphics.BlendState;
+using SamplerState = SharpDX.Toolkit.Graphics.SamplerState;
 
 namespace PokeSi
 {
@@ -31,6 +32,7 @@ namespace PokeSi
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private BlendState blendState;
+        private SamplerState samplerState;
 
         // Setup constantes
         private const int PreferredWidth = 1920;
@@ -75,10 +77,22 @@ namespace PokeSi
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            blendState = graphics.GraphicsDevice.BlendStates.AlphaBlend;
             blendState = BlendState.New(graphics.GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
-
-            screenManager.CloseAllAndThenOpen(new MainMenuScreen(screenManager));
+            samplerState = SamplerState.New(graphics.GraphicsDevice,
+                new SamplerStateDescription()
+                {
+                    AddressU = TextureAddressMode.Wrap,
+                    AddressV = TextureAddressMode.Wrap,
+                    AddressW = TextureAddressMode.Wrap,
+                    BorderColor = Color4.Black,
+                    ComparisonFunction = Comparison.Always,
+                    Filter = Filter.MinMagMipPoint,
+                    MaximumAnisotropy = 4,
+                    MaximumLod = 4,
+                    MinimumLod = 0,
+                    MipLodBias = 0
+                });
+            screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
         }
 
         /// <summary>
@@ -105,7 +119,7 @@ namespace PokeSi
         {
             graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendState); // Start drawing operation
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendState, samplerState); // Start drawing operation
 
             screenManager.Draw(gameTime, spriteBatch);
 
