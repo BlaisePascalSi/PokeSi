@@ -32,11 +32,10 @@ namespace PokeSi
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private BlendState blendState;
-        private SamplerState samplerState;
 
         // Setup constantes
-        private const int PreferredWidth = 1920;
-        private const int PreferredHeight = 1080;
+        private const int PreferredWidth = 800;
+        private const int PreferredHeight = 600;
         private const bool IsFullScreen = false;
         private const int TargetFrameRate = 60;
 
@@ -54,7 +53,7 @@ namespace PokeSi
             graphics.PreferredBackBufferWidth = PreferredWidth;
             graphics.PreferredBackBufferHeight = PreferredHeight;
             graphics.IsFullScreen = IsFullScreen;
-
+            
             Keyboard = new KeyboardManager(this);
             Mouse = new MouseManager(this);
             Input.Initilize(this);
@@ -77,21 +76,8 @@ namespace PokeSi
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            blendState = BlendState.New(graphics.GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
-            samplerState = SamplerState.New(graphics.GraphicsDevice,
-                new SamplerStateDescription()
-                {
-                    AddressU = TextureAddressMode.Wrap,
-                    AddressV = TextureAddressMode.Wrap,
-                    AddressW = TextureAddressMode.Wrap,
-                    BorderColor = Color4.Black,
-                    ComparisonFunction = Comparison.Always,
-                    Filter = Filter.MinMagMipPoint,
-                    MaximumAnisotropy = 4,
-                    MaximumLod = 4,
-                    MinimumLod = 0,
-                    MipLodBias = 0
-                });
+            blendState = BlendState.New(GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
+
             screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
         }
 
@@ -117,9 +103,9 @@ namespace PokeSi
         /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
-            graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendState, samplerState); // Start drawing operation
+            spriteBatch.Begin(SpriteSortMode.BackToFront, blendState, GraphicsDevice.SamplerStates.PointWrap); // Start drawing operation
 
             screenManager.Draw(gameTime, spriteBatch);
 
