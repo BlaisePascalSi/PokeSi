@@ -11,11 +11,16 @@ namespace PokeSi.Sprites
     public class SpriteSheet
     {
         public Texture2D Sheet { get; protected set; }
+        public int SpriteWidth { get; protected set; }
+        public int SpriteHeight { get; protected set; }
         private Rectangle[,] spritesRect;
 
         public SpriteSheet(PokeSiGame game, string fileName, int spriteWidth, int spriteHeight, int offsetX = 0, int offsetY = 0)
         {
             Sheet = game.Content.Load<Texture2D>(fileName);
+
+            SpriteWidth = spriteWidth;
+            SpriteHeight = spriteHeight;
 
             int nbSpriteX = Sheet.Width / (spriteWidth + offsetX);
             int nbSpriteY = Sheet.Height / (spriteHeight + offsetY);

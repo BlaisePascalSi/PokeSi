@@ -16,7 +16,7 @@ namespace PokeSi.Map
         public readonly static int Height = 32;
 
         public static SpriteSheet TileSheet { get; private set; }
-        public static Dictionary<string,Tile> UnLocatedTile;
+        public static Dictionary<string, Tile> UnLocatedTile;
 
         public World World { get; private set; }
 
@@ -29,8 +29,8 @@ namespace PokeSi.Map
         {
             Tile.TileSheet = new SpriteSheet(world.Game, "tiles.png", 16, 16, 1, 1);
             Tile.UnLocatedTile = new Dictionary<string, Tile>();
-            Tile.UnLocatedTile.Add("GrassTile", new GrassTile(world));
-            Tile.UnLocatedTile.Add("FlowerTile", new FlowerTile(world));
+            Tile.UnLocatedTile.Add("GrassTile", new DecorativeTile(world, TileSheet, 3, 0));
+            Tile.UnLocatedTile.Add("FlowerTile", new AnimatedTile(world, new Animation(TileSheet, 2f, 2, 3, 2, 0, 1)));
         }
 
         public virtual void Load()

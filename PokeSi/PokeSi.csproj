@@ -76,8 +76,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Input.cs" />
-    <Compile Include="Map\FlowerTile.cs" />
-    <Compile Include="Map\GrassTile.cs" />
+    <Compile Include="Map\AnimatedTile.cs" />
+    <Compile Include="Map\DecorativeTile.cs" />
     <Compile Include="Map\LocatedTile.cs" />
     <Compile Include="Map\Tile.cs" />
     <Compile Include="Map\World.cs" />
@@ -89,6 +89,8 @@
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Screens\Transition.cs" />
     <Compile Include="Screens\WorldScreen.cs" />
+    <Compile Include="Sprites\Animation.cs" />
+    <Compile Include="Sprites\AnimationPlayer.cs" />
     <Compile Include="Sprites\SpriteSheet.cs" />
   </ItemGroup>
   <ItemGroup>
