@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -45,5 +46,11 @@ namespace PokeSi.Map
 
         }
 
+        public virtual void Save(XmlDocument doc, XmlNode parent)
+        {
+            XmlElement type = doc.CreateElement("Type");
+            type.AppendChild(doc.CreateTextNode(this.GetType().Name));
+            parent.AppendChild(type);
+        }
     }
 }

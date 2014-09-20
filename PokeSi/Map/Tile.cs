@@ -17,6 +17,7 @@ namespace PokeSi.Map
 
         public static SpriteSheet TileSheet { get; private set; }
         public static Dictionary<string, Tile> UnLocatedTile;
+        private static bool hasLoaded = false;
 
         public World World { get; private set; }
 
@@ -27,10 +28,14 @@ namespace PokeSi.Map
 
         public static void StaticLoad(World world)
         {
+            if (hasLoaded)
+                return;
+
             Tile.TileSheet = new SpriteSheet(world.Game, "tiles.png", 16, 16, 1, 1);
             Tile.UnLocatedTile = new Dictionary<string, Tile>();
-            Tile.UnLocatedTile.Add("GrassTile", new DecorativeTile(world, TileSheet, 3, 0));
-            Tile.UnLocatedTile.Add("FlowerTile", new AnimatedTile(world, new Animation(TileSheet, 2f, 2, 3, 2, 0, 1)));
+            Tile.UnLocatedTile.Add("Grass", new DecorativeTile(world, TileSheet, 3, 0));
+            Tile.UnLocatedTile.Add("Flower", new AnimatedTile(world, new Animation(TileSheet, 2f, 2, 3, 2, 0, 1)));
+            hasLoaded = true;
         }
 
         public virtual void Load()

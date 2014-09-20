@@ -81,6 +81,13 @@ namespace PokeSi
             screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
         }
 
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            screenManager.CloseAllAndThenOpen(null);
+
+            base.OnExiting(sender, args);
+        }
+
         /// <summary>
         /// Update will be called once per game frame, it's the place to update
         /// all the logic.
@@ -90,6 +97,8 @@ namespace PokeSi
         {
             if (base.IsActive)
             {
+                Input.Update();
+
                 screenManager.Update(gameTime);
             }
 

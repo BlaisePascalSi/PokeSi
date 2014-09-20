@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Xml;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -24,30 +26,15 @@ namespace PokeSi.Map
             Tiles = new Tile[Width, Height];
         }
 
-        public void LoadFiles()
-        {
-            Tile.StaticLoad(this);
-
-            Random r = new Random();
-            for (int y = 0; y < Height; y++)
-            {
-                for (int x = 0; x < Width; x++)
-                {
-                    int i = r.Next(100);
-                    if(i<80)
-                    Tiles[x, y] = Tile.UnLocatedTile["GrassTile"];
-                    else
-                        Tiles[x, y] = Tile.UnLocatedTile["FlowerTile"];
-                }
-            }
-        }
-
         public void Update(GameTime gameTime)
         {
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
                 {
+                    if (Tiles[x, y] == null)
+                        Tiles[x, y] = Tile.UnLocatedTile["Grass"];
+
                     Tile tile = Tiles[x, y];
                     tile.Update(gameTime, x, y);
                 }
@@ -62,6 +49,62 @@ namespace PokeSi.Map
                 {
                     Tile tile = Tiles[x, y];
                     tile.Draw(gameTime, spriteBatch, x, y, new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height));
+                }
+            }
+        }
+
+        public void Save(XmlDocument doc, XmlNode parent)
+        {
+            XmlElement tilesElem = doc.CreateElement("Tiles");
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    Tile tile = Tiles[x, y];
+                    if (tile is LocatedTile)
+                    {
+                        LocatedTile located = (LocatedTile)tile;
+                        XmlElement locTileElem = doc.CreateElement("Loc" + "_" + x + "_" + y);
+                        located.Save(doc, locTileElem);
+                        tilesElem.AppendChild(locTileElem);
+                    }
+                    else
+                    {
+                        XmlElement tileElem = doc.CreateElement("UnLoc_" + x + "_" + y);
+                        tileElem.AppendChild(doc.CreateTextNode(Tile.UnLocatedTile.Where(t => t.Value == tile).First().Key));
+                        tilesElem.AppendChild(tileElem);
+                    }
+                }
+            }
+
+            parent.AppendChild(tilesElem);
+        }
+
+        public void Load(XmlDocument doc, XmlNode parent)
+        {
+            Tile.StaticLoad(this);
+
+            XmlElement tilesElem = (XmlElement)doc.GetElementsByTagName("Tiles").Item(0);
+
+            foreach (XmlElement tileElem in tilesElem.ChildNodes)
+            {
+                string nodeName = tileElem.Name;
+                string[] tab = nodeName.Split('_');
+                if (tab[0] == "Loc")
+                {
+                    // TODO Add load support for locatedTiles
+                }
+                else if (tab[0] == "UnLoc")
+                {
+                    string tileId = tileElem.FirstChild.Value;
+                    int x = int.Parse(tab[1]);
+                    int y = int.Parse(tab[2]);
+                    if (x < 0 || x >= Width)
+                        continue;
+                    if (y < 0 || y >= Height)
+                        continue;
+                    Tiles[x, y] = Tile.UnLocatedTile[tileId];
                 }
             }
         }
