@@ -79,6 +79,7 @@
     <Compile Include="Input.cs" />
     <Compile Include="Map\AnimatedTile.cs" />
     <Compile Include="Map\DecorativeTile.cs" />
+    <Compile Include="Map\Editor.cs" />
     <Compile Include="Map\LocatedTile.cs" />
     <Compile Include="Map\Tile.cs" />
     <Compile Include="Map\World.cs" />

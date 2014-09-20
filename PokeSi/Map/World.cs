@@ -8,6 +8,7 @@ using System.Xml;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
+using SharpDX.Toolkit.Input;
 
 namespace PokeSi.Map
 {
@@ -18,12 +19,17 @@ namespace PokeSi.Map
 
         public PokeSiGame Game;
 
+        private Editor editor;
+        private bool editorOn;
+
         private Tile[,] Tiles;
 
         public World(PokeSiGame game)
         {
             Game = game;
             Tiles = new Tile[Width, Height];
+            editor = new Editor(this);
+            editorOn = false;
         }
 
         public void Update(GameTime gameTime)
@@ -39,6 +45,12 @@ namespace PokeSi.Map
                     tile.Update(gameTime, x, y);
                 }
             }
+
+            if (Input.IsKeyPressed(Keys.O))
+                editorOn = !editorOn;
+
+            if (editorOn)
+                editor.Update(gameTime);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -51,6 +63,18 @@ namespace PokeSi.Map
                     tile.Draw(gameTime, spriteBatch, x, y, new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height));
                 }
             }
+        }
+
+        public void SetTile(int x, int y, Tile tile)
+        {
+            if (tile == null)
+                return;
+            if (x < 0 || x >= Width)
+                return;
+            if (y < 0 || y >= Height)
+                return;
+
+            Tiles[x, y] = tile;
         }
 
         public void Save(XmlDocument doc, XmlNode parent)
