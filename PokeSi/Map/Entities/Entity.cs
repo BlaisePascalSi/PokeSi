@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -13,7 +14,6 @@ namespace PokeSi.Map.Entities
     public class Entity
     {
         public World World { get; protected set; }
-        public string Name { get; protected set; }
         public float X { get; set; }
         public float Y { get; set; }
         public Vector2 Position
@@ -56,6 +56,32 @@ namespace PokeSi.Map.Entities
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             AnimationPlayer.Draw(gameTime, spriteBatch, DestinationRect, Color.White, 0.6f, AnimationPlayer.Animation.SpriteEffect);
+        }
+
+        public virtual void Save(XmlDocument doc, XmlElement parent)
+        {
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Type", this.GetType().Name, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("X", X, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Y", Y, doc));
+        }
+
+        public static Entity Unserialize(XmlDocument doc, XmlElement parent, World world)
+        {
+            if (!XmlHelper.HasChild("Type", parent))
+                return null;
+
+            string type = (string)XmlHelper.GetSimpleNodeContent<string>("Type", parent, "");
+            switch (type)
+            {
+                case "Person":
+                    {
+                        Person person = new Person(doc, parent, world);
+                        person.X = (float)XmlHelper.GetSimpleNodeContent<float>("X", parent, 0);
+                        person.Y = (float)XmlHelper.GetSimpleNodeContent<float>("Y", parent, 0);
+                        return person;
+                    }
+            }
+            return null;
         }
     }
 }

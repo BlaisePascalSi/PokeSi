@@ -28,13 +28,14 @@ namespace PokeSi.Map
         private SpriteFont font;
 
         private Tile[,] Tiles;
-        public Person Player { get; protected set; }
+        public Dictionary<int, Entity> Entities { get; protected set; }
 
         public World(PokeSiGame game)
         {
             Game = game;
             Tiles = new Tile[Width, Height];
-            Player = new Person(this, "Player");
+            Entities = new Dictionary<int, Entity>();
+            Entities.Add(0, new Person(this, "Player"));
             editor = new Editor(this);
             editorOn = false;
 
@@ -55,7 +56,10 @@ namespace PokeSi.Map
                 }
             }
 
-            Player.Update(gameTime);
+            foreach (Entity entity in Entities.Values)
+            {
+                entity.Update(gameTime);
+            }
 
             if (Input.IsKeyPressed(Keys.O))
                 editorOn = !editorOn;
@@ -75,7 +79,10 @@ namespace PokeSi.Map
                 }
             }
 
-            Player.Draw(gameTime, spriteBatch);
+            foreach (Entity entity in Entities.Values)
+            {
+                entity.Draw(gameTime, spriteBatch);
+            }
 
             if (editorOn)
                 spriteBatch.DrawString(font, new StringBuilder("Edit Mode"), Vector2.One, Color.Black);
@@ -93,10 +100,9 @@ namespace PokeSi.Map
             Tiles[x, y] = tile;
         }
 
-        public void Save(XmlDocument doc, XmlNode parent)
+        public void Save(XmlDocument doc, XmlElement parent)
         {
             XmlElement tilesElem = doc.CreateElement("Tiles");
-
             for (int y = 0; y < Height; y++)
             {
                 for (int x = 0; x < Width; x++)
@@ -117,12 +123,16 @@ namespace PokeSi.Map
                     }
                 }
             }
-
             parent.AppendChild(tilesElem);
 
-            XmlElement playerElem = doc.CreateElement("Player");
-            Player.Save(doc, playerElem);
-            parent.AppendChild(playerElem);
+            XmlElement entitiesElem = doc.CreateElement("Entities");
+            foreach (KeyValuePair<int, Entity> pair in Entities)
+            {
+                XmlElement entityElem = doc.CreateElement("E" + pair.Key);
+                pair.Value.Save(doc, entityElem);
+                entitiesElem.AppendChild(entityElem);
+            }
+            parent.AppendChild(entitiesElem);
         }
 
         public void Load(XmlDocument doc, XmlElement parent)
@@ -154,13 +164,19 @@ namespace PokeSi.Map
                 }
             }
 
-            if (XmlHelper.HasChild("Player", parent))
+            if (XmlHelper.HasChild("Entities", parent))
             {
-                XmlElement playerElem = XmlHelper.GetElement("Player", parent);
-                Player = new Person(doc, playerElem, this);
+                Entities = new Dictionary<int,Entity>();
+                XmlElement entitiesElem = XmlHelper.GetElement("Entities", parent);
+                foreach(XmlElement entityElem in entitiesElem.ChildNodes)
+                {
+                    Entity entity = Entity.Unserialize(doc, entityElem, this);
+                    int id;
+                    bool good = int.TryParse(entityElem.Name.TrimStart('E'), out id);
+                    if (entity != null && good)
+                        Entities.Add(id, entity);
+                }
             }
-            else
-                Player = new Person(this, "Player");
         }
     }
 }

@@ -23,6 +23,7 @@ namespace PokeSi.Map.Entities
             Left
         };
 
+        public string Name { get; protected set; }
         public SpriteSheet SpriteSheet;
         private Animation[] Idle;
         private Animation[] Walking;
@@ -65,24 +66,30 @@ namespace PokeSi.Map.Entities
         {
             Name = (string)XmlHelper.GetSimpleNodeContent<string>("Name", parent, "Player");
             CurrentDirection = (Direction)Enum.Parse(typeof(Direction), (string)XmlHelper.GetSimpleNodeContent<string>("Direction", parent, "Down"));
-            X = (float)XmlHelper.GetSimpleNodeContent<float>("X", parent, 0);
-            Y = (float)XmlHelper.GetSimpleNodeContent<float>("Y", parent, 0);
             SpeedCoefficient = (float)XmlHelper.GetSimpleNodeContent<float>("Speed", parent, 3);
 
             XmlElement sheetElem = XmlHelper.GetElement("Sheet", parent);
-            SpriteSheet = new SpriteSheet(doc, sheetElem, World.Game);
+            if (sheetElem != null)
+                SpriteSheet = new SpriteSheet(doc, sheetElem, World.Game);
+            else
+                SpriteSheet = new SpriteSheet(World.Game, "Entities/player.png", 32, 32);
 
             bool idleLoaded = true;
             XmlElement idleElem = XmlHelper.GetElement("Idle", parent);
-            Idle = new Animation[4];
-            for (int i = 0; i < 4; i++)
+            if (idleElem != null)
             {
-                XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), idleElem);
-                if (elem != null)
-                    Idle[i] = new Animation(doc, elem, SpriteSheet);
-                else
-                    idleLoaded = false;
+                Idle = new Animation[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), idleElem);
+                    if (elem != null)
+                        Idle[i] = new Animation(doc, elem, SpriteSheet);
+                    else
+                        idleLoaded = false;
+                }
             }
+            else
+                idleLoaded = false;
             if (!idleLoaded)
             {
                 Idle = new Animation[4];
@@ -95,15 +102,20 @@ namespace PokeSi.Map.Entities
 
             bool walkingLoaded = true;
             XmlElement walkingElem = XmlHelper.GetElement("Walking", parent);
-            Walking = new Animation[4];
-            for (int i = 0; i < 4; i++)
+            if (walkingElem != null)
             {
-                XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), walkingElem);
-                if (elem != null)
-                    Walking[i] = new Animation(doc, elem, SpriteSheet);
-                else
-                    walkingLoaded = false;
+                Walking = new Animation[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), walkingElem);
+                    if (elem != null)
+                        Walking[i] = new Animation(doc, elem, SpriteSheet);
+                    else
+                        walkingLoaded = false;
+                }
             }
+            else
+                walkingLoaded = false;
             if (!walkingLoaded)
             {
                 Walking = new Animation[4];
@@ -116,15 +128,20 @@ namespace PokeSi.Map.Entities
 
             bool runningLoaded = true;
             XmlElement runningElem = XmlHelper.GetElement("Running", parent);
-            Running = new Animation[4];
-            for (int i = 0; i < 4; i++)
+            if (runningElem != null)
             {
-                XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), runningElem);
-                if (elem != null)
-                    Running[i] = new Animation(doc, elem, SpriteSheet);
-                else
-                    runningLoaded = false;
+                Running = new Animation[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    XmlElement elem = XmlHelper.GetElement(((Direction)i).ToString(), runningElem);
+                    if (elem != null)
+                        Running[i] = new Animation(doc, elem, SpriteSheet);
+                    else
+                        runningLoaded = false;
+                }
             }
+            else
+                runningLoaded = false;
             if (!runningLoaded)
             {
                 Running = new Animation[4];
@@ -134,6 +151,7 @@ namespace PokeSi.Map.Entities
                 Running[(int)Direction.Left] = new Animation(SpriteSheet, 0.25f, 4, 8, 2);
                 Running[(int)Direction.Left].SpriteEffect = SpriteEffects.FlipHorizontally;
             }
+            AnimationPlayer.PlayAnimation(Idle[(int)CurrentDirection]);
         }
 
         public override void Update(GameTime gameTime)
@@ -174,12 +192,12 @@ namespace PokeSi.Map.Entities
             base.Draw(gameTime, spriteBatch);
         }
 
-        public void Save(XmlDocument doc, XmlNode parent)
+        public override void Save(XmlDocument doc, XmlElement parent)
         {
+            base.Save(doc, parent);
+
             parent.AppendChild(XmlHelper.CreateSimpleNode("Name", Name, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("Direction", CurrentDirection, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("X", X, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Y", Y, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("Speed", SpeedCoefficient, doc));
 
             XmlElement sheetElem = doc.CreateElement("Sheet");
