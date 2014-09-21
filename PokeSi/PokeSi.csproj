@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2556CAAA-30FA-4F11-A5EE-ECE52EB715F0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PokeSi</RootNamespace>
     <AssemblyName>PokeSi</AssemblyName>
@@ -30,6 +30,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -77,11 +80,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Input.cs" />
-    <Compile Include="Map\AnimatedTile.cs" />
-    <Compile Include="Map\DecorativeTile.cs" />
+    <Compile Include="Map\Entities\Entity.cs" />
+    <Compile Include="Map\Entities\Person.cs" />
+    <Compile Include="Map\Tiles\AnimatedTile.cs" />
+    <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />
-    <Compile Include="Map\LocatedTile.cs" />
-    <Compile Include="Map\Tile.cs" />
+    <Compile Include="Map\Tiles\LocatedTile.cs" />
+    <Compile Include="Map\Tiles\Tile.cs" />
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
@@ -94,6 +99,7 @@
     <Compile Include="Sprites\Animation.cs" />
     <Compile Include="Sprites\AnimationPlayer.cs" />
     <Compile Include="Sprites\SpriteSheet.cs" />
+    <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\tiles.png">
@@ -102,6 +108,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\background.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ToolkitFont Include="Content\Fonts\Hud.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </ToolkitFont>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Entities\player.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using SharpDX.Toolkit.Graphics;
 
 namespace PokeSi.Sprites
 {
@@ -16,6 +18,7 @@ namespace PokeSi.Sprites
         public int XMult { get; set; }
         public int YMult { get; set; }
         public bool IsLooping { get; set; }
+        public SpriteEffects SpriteEffect { get; set; }
 
         public Animation(SpriteSheet sheet, float frameTime, int frameCount, int xBase = 0, int yBase = 0, int xMult = 1, int yMult = 0, bool isLooping = true)
         {
@@ -27,6 +30,36 @@ namespace PokeSi.Sprites
             XMult = xMult;
             YMult = yMult;
             IsLooping = isLooping;
+
+            if (FrameTime == 0)
+                FrameTime = 1;
+        }
+        public Animation(XmlDocument doc, XmlElement parent, SpriteSheet sheet)
+        {
+            SpriteSheet = sheet;
+            FrameTime = (float)XmlHelper.GetSimpleNodeContent<float>("FrameTime", parent, 1);
+            FrameCount = (int)XmlHelper.GetSimpleNodeContent<int>("FrameCount", parent, 1);
+            XBase = (int)XmlHelper.GetSimpleNodeContent<int>("XBase", parent, 0);
+            YBase = (int)XmlHelper.GetSimpleNodeContent<int>("YBase", parent, 0);
+            XMult = (int)XmlHelper.GetSimpleNodeContent<int>("XMult", parent, 1);
+            YMult = (int)XmlHelper.GetSimpleNodeContent<int>("YMult", parent, 0);
+            IsLooping = (bool)XmlHelper.GetSimpleNodeContent<bool>("IsLooping", parent, true);
+            SpriteEffect = (SpriteEffects)Enum.Parse(typeof(SpriteEffects), (string)XmlHelper.GetSimpleNodeContent<string>("Effect", parent, "None"));
+
+            if (FrameTime == 0)
+                FrameTime = 1;
+        }
+
+        public void Save(XmlDocument doc, XmlElement parent)
+        {
+            parent.AppendChild(XmlHelper.CreateSimpleNode("FrameTime", FrameTime, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("FrameCount", FrameCount, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("XBase", XBase, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("YBase", YBase, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("XMult", XMult, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("YMult", YMult, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("IsLooping", IsLooping, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Effect", SpriteEffect, doc));
         }
     }
 }

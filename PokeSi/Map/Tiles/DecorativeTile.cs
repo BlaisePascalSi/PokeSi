@@ -8,7 +8,7 @@ using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 using PokeSi.Sprites;
 
-namespace PokeSi.Map
+namespace PokeSi.Map.Tiles
 {
     public class DecorativeTile : Tile
     {

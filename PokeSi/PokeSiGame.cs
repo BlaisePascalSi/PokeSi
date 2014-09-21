@@ -114,7 +114,7 @@ namespace PokeSi
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.BackToFront, blendState, GraphicsDevice.SamplerStates.PointWrap); // Start drawing operation
+            spriteBatch.Begin(SpriteSortMode.Deferred, blendState, GraphicsDevice.SamplerStates.PointWrap); // Start drawing operation
 
             screenManager.Draw(gameTime, spriteBatch);
 

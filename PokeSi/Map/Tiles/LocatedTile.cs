@@ -8,7 +8,7 @@ using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 
-namespace PokeSi.Map
+namespace PokeSi.Map.Tiles
 {
     public class LocatedTile : Tile
     {

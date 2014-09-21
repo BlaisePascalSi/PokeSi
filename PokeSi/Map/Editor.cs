@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX.Toolkit;
+using PokeSi.Map.Tiles;
 
 namespace PokeSi.Map
 {
