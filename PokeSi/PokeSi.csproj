@@ -80,8 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Input.cs" />
+    <Compile Include="Map\Entities\Controller.cs" />
     <Compile Include="Map\Entities\Entity.cs" />
+    <Compile Include="Map\Entities\KeyboardController.cs" />
     <Compile Include="Map\Entities\Person.cs" />
+    <Compile Include="Map\Entities\SimpleAIController.cs" />
     <Compile Include="Map\Tiles\AnimatedTile.cs" />
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />

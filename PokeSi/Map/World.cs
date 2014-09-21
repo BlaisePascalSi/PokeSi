@@ -35,7 +35,7 @@ namespace PokeSi.Map
             Game = game;
             Tiles = new Tile[Width, Height];
             Entities = new Dictionary<int, Entity>();
-            Entities.Add(0, new Person(this, "Player"));
+            Entities.Add(0, new Person(this, "Player", Entity.Controllers.Keyboard));
             editor = new Editor(this);
             editorOn = false;
 

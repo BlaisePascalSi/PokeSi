@@ -8,12 +8,29 @@ using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 using PokeSi.Sprites;
+using PokeSi.Map.Tiles;
 
 namespace PokeSi.Map.Entities
 {
     public class Entity
     {
+        public static class Controllers
+        {
+            public readonly static Controller Keyboard = new KeyboardController();
+            public readonly static Controller SimpleAI = new SimpleAIController();
+
+            public static Controller Get(string name)
+            {
+                if (name == "Keyboard")
+                    return Keyboard;
+                if (name == "SimpleAI")
+                    return SimpleAI;
+                return null;
+            }
+        };
+
         public World World { get; protected set; }
+        public Controller Controller { get; protected set; }
         public float X { get; set; }
         public float Y { get; set; }
         public Vector2 Position
@@ -27,6 +44,8 @@ namespace PokeSi.Map.Entities
             get { return velocity; }
             set { velocity = value; }
         }
+        protected float SpeedCoefficient = 1;
+        public float Speed { get { return SpeedCoefficient * Tile.Width * World.ScalingFactor; } }
 
         public AnimationPlayer AnimationPlayer { get; protected set; }
         private Vector2 origin;
@@ -44,13 +63,13 @@ namespace PokeSi.Map.Entities
         public Entity(World world)
         {
             World = world;
-
             AnimationPlayer = new AnimationPlayer();
         }
 
         public virtual void Update(GameTime gameTime)
         {
-
+            if (Controller != null)
+                Controller.Update(gameTime, this);
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -63,6 +82,7 @@ namespace PokeSi.Map.Entities
             parent.AppendChild(XmlHelper.CreateSimpleNode("Type", this.GetType().Name, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("X", X, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("Y", Y, doc));
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Speed", SpeedCoefficient, doc));
         }
 
         public static Entity Unserialize(XmlDocument doc, XmlElement parent, World world)
@@ -71,17 +91,19 @@ namespace PokeSi.Map.Entities
                 return null;
 
             string type = (string)XmlHelper.GetSimpleNodeContent<string>("Type", parent, "");
+            Entity result = null;
             switch (type)
             {
                 case "Person":
                     {
-                        Person person = new Person(doc, parent, world);
-                        person.X = (float)XmlHelper.GetSimpleNodeContent<float>("X", parent, 0);
-                        person.Y = (float)XmlHelper.GetSimpleNodeContent<float>("Y", parent, 0);
-                        return person;
+                        result = new Person(doc, parent, world);
+                        break;
                     }
             }
-            return null;
+            result.X = (float)XmlHelper.GetSimpleNodeContent<float>("X", parent, 0);
+            result.Y = (float)XmlHelper.GetSimpleNodeContent<float>("Y", parent, 0);
+            result.SpeedCoefficient = (float)XmlHelper.GetSimpleNodeContent<float>("Speed", parent, 3);
+            return result;
         }
     }
 }

@@ -9,7 +9,6 @@ using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 using SharpDX.Toolkit.Input;
 using PokeSi.Sprites;
-using PokeSi.Map.Tiles;
 
 namespace PokeSi.Map.Entities
 {
@@ -30,12 +29,10 @@ namespace PokeSi.Map.Entities
         private Animation[] Running;
         public Direction CurrentDirection { get; protected set; }
 
-        private float SpeedCoefficient;
-        public float Speed { get { return SpeedCoefficient * Tile.Width * World.ScalingFactor; } }
-
-        public Person(World world, string name)
+        public Person(World world, string name, Controller controller = null)
             : base(world)
         {
+            Controller = controller;
             SpriteSheet = new SpriteSheet(World.Game, "Entities/player.png", 32, 32);
             Idle = new Animation[4];
             Idle[(int)Direction.Down] = new Animation(SpriteSheet, 0, 1, 0, 0);
@@ -66,7 +63,7 @@ namespace PokeSi.Map.Entities
         {
             Name = (string)XmlHelper.GetSimpleNodeContent<string>("Name", parent, "Player");
             CurrentDirection = (Direction)Enum.Parse(typeof(Direction), (string)XmlHelper.GetSimpleNodeContent<string>("Direction", parent, "Down"));
-            SpeedCoefficient = (float)XmlHelper.GetSimpleNodeContent<float>("Speed", parent, 3);
+            Controller = Entity.Controllers.Get((string)XmlHelper.GetSimpleNodeContent<string>("Controller", parent, ""));
 
             XmlElement sheetElem = XmlHelper.GetElement("Sheet", parent);
             if (sheetElem != null)
@@ -158,20 +155,6 @@ namespace PokeSi.Map.Entities
         {
             base.Update(gameTime);
 
-            Vector2 toMove = Vector2.Zero;
-            if (Input.IsKeyDown(Keys.S) || Input.IsKeyDown(Keys.Down))
-                toMove.Y += 1;
-            if (Input.IsKeyDown(Keys.Z) || Input.IsKeyDown(Keys.Up))
-                toMove.Y -= 1;
-            if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
-                toMove.X += 1;
-            if (Input.IsKeyDown(Keys.Q) || Input.IsKeyDown(Keys.Left))
-                toMove.X -= 1;
-            toMove.Normalize();
-
-            Velocity = toMove * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Position += Velocity;
-
             if (Velocity.Y > 0)
                 CurrentDirection = Direction.Down;
             if (Velocity.Y < 0)
@@ -198,7 +181,8 @@ namespace PokeSi.Map.Entities
 
             parent.AppendChild(XmlHelper.CreateSimpleNode("Name", Name, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("Direction", CurrentDirection, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Speed", SpeedCoefficient, doc));
+            if (Controller != null)
+                parent.AppendChild(XmlHelper.CreateSimpleNode("Controller", Controller, doc));
 
             XmlElement sheetElem = doc.CreateElement("Sheet");
             SpriteSheet.Save(doc, sheetElem);
