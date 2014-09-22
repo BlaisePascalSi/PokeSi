@@ -17,7 +17,7 @@ namespace PokeSi.Sprites
         public int SpriteHeight { get; protected set; }
         private int offsetX;
         private int offsetY;
-        private Rectangle[,] spritesRect;
+        private Sprite[,] sprites;
 
         public SpriteSheet(PokeSiGame game, string fileName, int spriteWidth, int spriteHeight, int offsetX = 0, int offsetY = 0)
         {
@@ -32,10 +32,10 @@ namespace PokeSi.Sprites
             int nbSpriteX = Sheet.Width / (spriteWidth + offsetX);
             int nbSpriteY = Sheet.Height / (spriteHeight + offsetY);
 
-            spritesRect = new Rectangle[nbSpriteX, nbSpriteY];
+            sprites = new Sprite[nbSpriteX, nbSpriteY];
             for (int y = 0; y < nbSpriteY; y++)
                 for (int x = 0; x < nbSpriteX; x++)
-                    spritesRect[x, y] = new Rectangle(x * (spriteWidth + offsetX), y * (spriteHeight + offsetY), spriteWidth, spriteHeight);
+                    sprites[x, y] = new Sprite(this, new Rectangle(x * (spriteWidth + offsetX), y * (spriteHeight + offsetY), spriteWidth, spriteHeight));
         }
         public SpriteSheet(XmlDocument doc, XmlElement parent, PokeSiGame game)
         {
@@ -51,15 +51,20 @@ namespace PokeSi.Sprites
             int nbSpriteX = Sheet.Width / (SpriteWidth + offsetX);
             int nbSpriteY = Sheet.Height / (SpriteHeight + offsetY);
 
-            spritesRect = new Rectangle[nbSpriteX, nbSpriteY];
+            sprites = new Sprite[nbSpriteX, nbSpriteY];
             for (int y = 0; y < nbSpriteY; y++)
                 for (int x = 0; x < nbSpriteX; x++)
-                    spritesRect[x, y] = new Rectangle(x * (SpriteWidth + offsetX), y * (SpriteHeight + offsetY), SpriteWidth, SpriteHeight);
+                    sprites[x, y] = new Sprite(this, new Rectangle(x * (SpriteWidth + offsetX), y * (SpriteHeight + offsetY), SpriteWidth, SpriteHeight));
+        }
+
+        public Sprite GetSprite(int x, int y)
+        {
+            return sprites[x, y];
         }
 
         public Rectangle GetSpriteRect(int x, int y)
         {
-            return spritesRect[x, y];
+            return sprites[x, y].SourceRect;
         }
 
         public void Save(XmlDocument doc, XmlElement parent)
