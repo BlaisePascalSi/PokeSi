@@ -93,6 +93,10 @@
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Screens\Controls\ToggleButton.cs" />
+    <Compile Include="Screens\Controls\Button.cs" />
+    <Compile Include="Screens\Controls\Control.cs" />
+    <Compile Include="Screens\Controls\TextBox.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\NoneTransition.cs" />
     <Compile Include="Screens\Screen.cs" />
@@ -122,6 +126,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\Entities\player.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\button.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

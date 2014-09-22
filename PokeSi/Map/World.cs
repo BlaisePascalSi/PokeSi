@@ -11,6 +11,7 @@ using SharpDX.Toolkit.Graphics;
 using SharpDX.Toolkit.Input;
 using PokeSi.Map.Tiles;
 using PokeSi.Map.Entities;
+using PokeSi.Screens;
 
 namespace PokeSi.Map
 {
@@ -21,7 +22,7 @@ namespace PokeSi.Map
 
         public float ScalingFactor { get { return Tile.Width / Tile.TileSheet.SpriteWidth; } }
 
-        public PokeSiGame Game;
+        public WorldScreen Screen;
 
         private Editor editor;
         private bool editorOn;
@@ -30,38 +31,41 @@ namespace PokeSi.Map
         private Tile[,] Tiles;
         public Dictionary<int, Entity> Entities { get; protected set; }
 
-        public World(PokeSiGame game)
+        public World(WorldScreen screen)
         {
-            Game = game;
+            Screen = screen;
             Tiles = new Tile[Width, Height];
             Entities = new Dictionary<int, Entity>();
             Entities.Add(0, new Person(this, "Player", Entity.Controllers.Keyboard));
             editor = new Editor(this);
             editorOn = false;
 
-            font = Game.Content.Load<SpriteFont>("Fonts/Hud");
+            font = Screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
         }
 
         public void Update(GameTime gameTime)
         {
-            for (int y = 0; y < Height; y++)
+            if (!editor.TimeSwitch.IsDown() || !editorOn)
             {
-                for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
                 {
-                    if (Tiles[x, y] == null)
-                        Tiles[x, y] = Tile.UnLocatedTile["Grass"];
+                    for (int x = 0; x < Width; x++)
+                    {
+                        if (Tiles[x, y] == null)
+                            Tiles[x, y] = Tile.UnLocatedTile["Grass"];
 
-                    Tile tile = Tiles[x, y];
-                    tile.Update(gameTime, x, y);
+                        Tile tile = Tiles[x, y];
+                        tile.Update(gameTime, x, y);
+                    }
+                }
+
+                foreach (Entity entity in Entities.Values)
+                {
+                    entity.Update(gameTime);
                 }
             }
 
-            foreach (Entity entity in Entities.Values)
-            {
-                entity.Update(gameTime);
-            }
-
-            if (Input.IsKeyPressed(Keys.O))
+            if (Input.IsKeyPressed(Keys.Tab))
                 editorOn = !editorOn;
 
             if (editorOn)
@@ -85,7 +89,7 @@ namespace PokeSi.Map
             }
 
             if (editorOn)
-                spriteBatch.DrawString(font, new StringBuilder("Edit Mode"), Vector2.One, Color.Black);
+                editor.Draw(gameTime, spriteBatch);
         }
 
         public void SetTile(int x, int y, Tile tile)

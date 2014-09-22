@@ -26,7 +26,7 @@ namespace PokeSi.Screens
         {
             base.LoadContent();
 
-            World = new World(Manager.Game);
+            World = new World(this);
 
             XmlDocument doc = new XmlDocument();
             doc.Load("save.xml");

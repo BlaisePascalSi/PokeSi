@@ -33,7 +33,7 @@ namespace PokeSi.Map.Entities
             : base(world)
         {
             Controller = controller;
-            SpriteSheet = new SpriteSheet(World.Game, "Entities/player.png", 32, 32);
+            SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png", 32, 32);
             Idle = new Animation[4];
             Idle[(int)Direction.Down] = new Animation(SpriteSheet, 0, 1, 0, 0);
             Idle[(int)Direction.Up] = new Animation(SpriteSheet, 0, 1, 1, 0);
@@ -67,9 +67,9 @@ namespace PokeSi.Map.Entities
 
             XmlElement sheetElem = XmlHelper.GetElement("Sheet", parent);
             if (sheetElem != null)
-                SpriteSheet = new SpriteSheet(doc, sheetElem, World.Game);
+                SpriteSheet = new SpriteSheet(doc, sheetElem, World.Screen.Manager.Game);
             else
-                SpriteSheet = new SpriteSheet(World.Game, "Entities/player.png", 32, 32);
+                SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png", 32, 32);
 
             bool idleLoaded = true;
             XmlElement idleElem = XmlHelper.GetElement("Idle", parent);

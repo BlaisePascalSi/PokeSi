@@ -31,7 +31,7 @@ namespace PokeSi.Map.Tiles
             if (hasLoaded)
                 return;
 
-            Tile.TileSheet = new SpriteSheet(world.Game, "tiles.png", 16, 16, 1, 1);
+            Tile.TileSheet = new SpriteSheet(world.Screen.Manager.Game, "tiles.png", 16, 16, 1, 1);
             Tile.UnLocatedTile = new Dictionary<string, Tile>();
             Tile.UnLocatedTile.Add("Grass", new DecorativeTile(world, TileSheet, 3, 0));
             Tile.UnLocatedTile.Add("Flower", new AnimatedTile(world, new Animation(TileSheet, 2f, 2, 3, 2, 0, 1)));
