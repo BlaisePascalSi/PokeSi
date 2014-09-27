@@ -85,6 +85,8 @@
     <Compile Include="Map\Entities\KeyboardController.cs" />
     <Compile Include="Map\Entities\Person.cs" />
     <Compile Include="Map\Entities\SimpleAIController.cs" />
+    <Compile Include="Map\Form.cs" />
+    <Compile Include="Map\IEditable.cs" />
     <Compile Include="Map\Tiles\AnimatedTile.cs" />
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />
@@ -93,10 +95,14 @@
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Screens\Controls\ListButton.cs" />
+    <Compile Include="Screens\Controls\Panel.cs" />
+    <Compile Include="Screens\Controls\TextBlock.cs" />
     <Compile Include="Screens\Controls\ToggleButton.cs" />
     <Compile Include="Screens\Controls\Button.cs" />
     <Compile Include="Screens\Controls\Control.cs" />
     <Compile Include="Screens\Controls\TextBox.cs" />
+    <Compile Include="Screens\FormScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\NoneTransition.cs" />
     <Compile Include="Screens\Screen.cs" />

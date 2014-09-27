@@ -80,13 +80,12 @@ namespace PokeSi.Screens
                 return;
 
             Screen foregroundScreen = Screens.Peek();
-            Screens.Reverse();
             List<Screen> Temp = Screens.ToList();
+            Temp.Reverse();
             foreach (Screen screen in Temp)
             {
                 screen.Draw(gameTime, screen == foregroundScreen, spriteBatch);
             }
-            Screens.Reverse();
         }
     }
 }

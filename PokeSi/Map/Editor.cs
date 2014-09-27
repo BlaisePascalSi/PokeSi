@@ -8,6 +8,8 @@ using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 using PokeSi.Map.Tiles;
+using PokeSi.Map.Entities;
+using PokeSi.Screens;
 using PokeSi.Screens.Controls;
 using PokeSi.Sprites;
 
@@ -32,6 +34,9 @@ namespace PokeSi.Map
             TimeSwitch = new ToggleButton(world.Screen, new Rectangle(world.Screen.Manager.Width - 40, 0, 40, 40), buttonSheet, 0);
         }
 
+        private float lastClickTimer = 0;
+        private FormScreen currentFormScreen;
+        private IEditable currentEditable;
         public void Update(GameTime gameTime)
         {
             selectTileButton.Update(gameTime);
@@ -47,17 +52,51 @@ namespace PokeSi.Map
                 doc.Save(textBox.Text);
             }
 
-            if (Input.LeftButton.Pressed)
+            /*if (Input.LeftButton.Pressed)
             {
                 int x = Input.X / Tile.Width;
                 int y = Input.Y / Tile.Height;
                 World.SetTile(x, y, Tile.UnLocatedTile["Grass"]);
-            }
+            }*/
             if (Input.RightButton.Pressed)
             {
                 int x = Input.X / Tile.Width;
                 int y = Input.Y / Tile.Height;
                 World.SetTile(x, y, Tile.UnLocatedTile["Flower"]);
+            }
+
+            // Double click
+            if (Input.LeftButton.Pressed)
+            {
+                if (lastClickTimer <= 0)
+                    lastClickTimer = 0.5f;
+                else
+                {
+                    lastClickTimer = 0;
+
+                    foreach (Entity ent in World.Entities.Values)
+                    {
+                        if (ent is IEditable)
+                        {
+                            IEditable toEdit = (IEditable)ent;
+                            if (toEdit.Bound.Contains(new Point(Input.X, Input.Y)))
+                            {
+                                Form form = toEdit.GetEditingForm();
+                                currentFormScreen = new FormScreen(World.Screen.Manager, form);
+                                currentEditable = toEdit;
+                                World.Screen.Manager.OpenScreen(currentFormScreen);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            lastClickTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (currentFormScreen != null && currentFormScreen.IsSubmitted && currentEditable != null)
+            {
+                currentEditable.SubmitForm(currentFormScreen.Form);
+                currentFormScreen = null;
+                currentEditable = null;
             }
         }
 

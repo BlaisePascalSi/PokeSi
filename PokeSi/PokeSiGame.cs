@@ -53,7 +53,7 @@ namespace PokeSi
             graphics.PreferredBackBufferWidth = PreferredWidth;
             graphics.PreferredBackBufferHeight = PreferredHeight;
             graphics.IsFullScreen = IsFullScreen;
-            
+
             Keyboard = new KeyboardManager(this);
             Mouse = new MouseManager(this);
             Input.Initilize(this);
@@ -78,8 +78,15 @@ namespace PokeSi
             spriteBatch = new SpriteBatch(GraphicsDevice);
             blendState = BlendState.New(GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
 
+            Window.ClientSizeChanged += Window_ClientSizeChanged;
+
             screenManager.Resize(Viewport.Width, Viewport.Height);
             screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
+        }
+
+        void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            screenManager.Resize(Viewport.Width, Viewport.Height);
         }
 
         protected override void OnExiting(object sender, EventArgs args)

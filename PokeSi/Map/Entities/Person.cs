@@ -12,7 +12,7 @@ using PokeSi.Sprites;
 
 namespace PokeSi.Map.Entities
 {
-    public class Person : Entity
+    public class Person : Entity, IEditable
     {
         public enum Direction
         {
@@ -28,6 +28,7 @@ namespace PokeSi.Map.Entities
         private Animation[] Walking;
         private Animation[] Running;
         public Direction CurrentDirection { get; protected set; }
+        public Rectangle Bound { get { return DestinationRect; } }
 
         public Person(World world, string name, Controller controller = null)
             : base(world)
@@ -214,6 +215,32 @@ namespace PokeSi.Map.Entities
                 runningElem.AppendChild(elem);
             }
             parent.AppendChild(runningElem);
+        }
+
+        public Form GetEditingForm()
+        {
+            Form result = new Form();
+
+            result.Datas.Add("X", X);
+            result.Datas.Add("Y", Y);
+            result.Datas.Add("Speed", SpeedCoefficient);
+            result.Datas.Add("Name", Name);
+            result.Datas.Add("Direction", CurrentDirection);
+            result.Datas.Add("Controller", Controller);
+            result.Datas.Add("Sheet", SpriteSheet);
+
+            return result;
+        }
+
+        public void SubmitForm(Form form)
+        {
+            X = (float)form.Datas["X"];
+            Y = (float)form.Datas["Y"];
+            SpeedCoefficient = (float)form.Datas["Speed"];
+            Name = (string)form.Datas["Name"];
+            CurrentDirection = (Direction)form.Datas["Direction"];
+            Controller = (Controller)form.Datas["Controller"];
+            SpriteSheet = (SpriteSheet)form.Datas["Sheet"];
         }
     }
 }

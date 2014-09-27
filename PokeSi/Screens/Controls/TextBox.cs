@@ -13,7 +13,6 @@ namespace PokeSi.Screens.Controls
 {
     public class TextBox : Control
     {
-        public Rectangle Bound { get; protected set; }
         public bool IsSelected { get; protected set; }
         public SpriteSheet Sheet { get; protected set; }
         private int X;
@@ -40,8 +39,8 @@ namespace PokeSi.Screens.Controls
 
             if (Input.LeftButton.Pressed)
             {
-                if (Input.X >= Bound.Left && Input.X <= Bound.Right &&
-                Input.Y >= Bound.Top && Input.Y <= Bound.Bottom)
+                if (Input.X >= DestinationRect.Left && Input.X <= DestinationRect.Right &&
+                Input.Y >= DestinationRect.Top && Input.Y <= DestinationRect.Bottom)
                     IsSelected = true;
                 else
                     IsSelected = false;
@@ -76,9 +75,9 @@ namespace PokeSi.Screens.Controls
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.Draw(Sheet.Sheet, Bound, Sheet.GetSpriteRect(X + (IsSelected ? 1 : 0), Y), Color.White);
+            spriteBatch.Draw(Sheet.Sheet, DestinationRect, Sheet.GetSpriteRect(X + (IsSelected ? 1 : 0), Y), Color.White);
             if (Text != "")
-                spriteBatch.DrawString(font, Text, new Vector2(Bound.X, Bound.Y), Color.White);
+                spriteBatch.DrawString(font, Text, new Vector2(DestinationRect.X, DestinationRect.Y), Color.White);
         }
     }
 }

@@ -27,6 +27,23 @@ namespace PokeSi.Map.Entities
                     return SimpleAI;
                 return null;
             }
+
+            public static string GetName(Controller controller)
+            {
+                if (controller == Keyboard)
+                    return "Keyboard";
+                if (controller == SimpleAI)
+                    return "SimpleAI";
+                return "";
+            }
+
+            public static List<string> GetAll()
+            {
+                return new List<string>(new string[]{
+                    "Keyboard",
+                    "SimpleAI"
+                });
+            }
         };
 
         public World World { get; protected set; }

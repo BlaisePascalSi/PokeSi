@@ -43,7 +43,7 @@ namespace PokeSi.Screens
             ClosingTransition.Start();
         }
 
-        public void Resize(int width, int height)
+        public virtual void Resize(int width, int height)
         {
 
         }
