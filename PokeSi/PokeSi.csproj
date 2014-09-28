@@ -111,6 +111,7 @@
     <Compile Include="Screens\WorldScreen.cs" />
     <Compile Include="Sprites\Animation.cs" />
     <Compile Include="Sprites\AnimationPlayer.cs" />
+    <Compile Include="Sprites\Resources.cs" />
     <Compile Include="Sprites\Sprite.cs" />
     <Compile Include="Sprites\SpriteSheet.cs" />
     <Compile Include="XmlHelper.cs" />

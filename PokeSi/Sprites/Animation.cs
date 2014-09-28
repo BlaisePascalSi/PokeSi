@@ -10,6 +10,7 @@ namespace PokeSi.Sprites
 {
     public class Animation
     {
+        public Resources Resources { get; protected set; }
         public SpriteSheet SpriteSheet { get; protected set; }
         public float FrameTime { get; set; }
         public int FrameCount { get; set; }
@@ -20,8 +21,9 @@ namespace PokeSi.Sprites
         public bool IsLooping { get; set; }
         public SpriteEffects SpriteEffect { get; set; }
 
-        public Animation(SpriteSheet sheet, float frameTime, int frameCount, int xBase = 0, int yBase = 0, int xMult = 1, int yMult = 0, bool isLooping = true)
+        public Animation(SpriteSheet sheet, Resources res, float frameTime, int frameCount, int xBase = 0, int yBase = 0, int xMult = 1, int yMult = 0, bool isLooping = true)
         {
+            Resources = res;
             SpriteSheet = sheet;
             FrameTime = frameTime;
             FrameCount = frameCount;
@@ -34,9 +36,10 @@ namespace PokeSi.Sprites
             if (FrameTime == 0)
                 FrameTime = 1;
         }
-        public Animation(XmlDocument doc, XmlElement parent, SpriteSheet sheet)
+        public Animation(XmlDocument doc, XmlElement parent, Resources res)
         {
-            SpriteSheet = sheet;
+            Resources = res;
+            SpriteSheet = res.SpriteSheets[(string)XmlHelper.GetSimpleNodeContent<string>("Sheet", parent, "")];
             FrameTime = (float)XmlHelper.GetSimpleNodeContent<float>("FrameTime", parent, 1);
             FrameCount = (int)XmlHelper.GetSimpleNodeContent<int>("FrameCount", parent, 1);
             XBase = (int)XmlHelper.GetSimpleNodeContent<int>("XBase", parent, 0);
@@ -52,6 +55,7 @@ namespace PokeSi.Sprites
 
         public void Save(XmlDocument doc, XmlElement parent)
         {
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Sheet", Resources.SpriteSheets.Where(pair => pair.Value == SpriteSheet).First().Key, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("FrameTime", FrameTime, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("FrameCount", FrameCount, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("XBase", XBase, doc));

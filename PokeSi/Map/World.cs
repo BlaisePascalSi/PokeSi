@@ -12,6 +12,7 @@ using SharpDX.Toolkit.Input;
 using PokeSi.Map.Tiles;
 using PokeSi.Map.Entities;
 using PokeSi.Screens;
+using PokeSi.Sprites;
 
 namespace PokeSi.Map
 {
@@ -22,7 +23,8 @@ namespace PokeSi.Map
 
         public float ScalingFactor { get { return Tile.Width / Tile.TileSheet.SpriteWidth; } }
 
-        public WorldScreen Screen;
+        public WorldScreen Screen { get; protected set; }
+        public Resources Resources { get; protected set; }
 
         private Editor editor;
         private bool editorOn;
@@ -106,6 +108,9 @@ namespace PokeSi.Map
 
         public void Save(XmlDocument doc, XmlElement parent)
         {
+            parent.AppendChild(XmlHelper.CreateSimpleNode("Resources", "resources.xml", doc));
+            Resources.Save("resources.xml");
+
             XmlElement tilesElem = doc.CreateElement("Tiles");
             for (int y = 0; y < Height; y++)
             {
@@ -143,6 +148,9 @@ namespace PokeSi.Map
         {
             Tile.StaticLoad(this);
 
+                string path = (string)XmlHelper.GetSimpleNodeContent<string>("Resources", parent, "resources.xml");
+                Resources = new Resources(this, path);
+
             if (XmlHelper.HasChild("Tiles", parent))
             {
                 XmlElement tilesElem = XmlHelper.GetElement("Tiles", parent);
@@ -170,9 +178,9 @@ namespace PokeSi.Map
 
             if (XmlHelper.HasChild("Entities", parent))
             {
-                Entities = new Dictionary<int,Entity>();
+                Entities = new Dictionary<int, Entity>();
                 XmlElement entitiesElem = XmlHelper.GetElement("Entities", parent);
-                foreach(XmlElement entityElem in entitiesElem.ChildNodes)
+                foreach (XmlElement entityElem in entitiesElem.ChildNodes)
                 {
                     Entity entity = Entity.Unserialize(doc, entityElem, this);
                     int id;

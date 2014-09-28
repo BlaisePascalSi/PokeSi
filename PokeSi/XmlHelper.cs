@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using SharpDX;
 
 namespace PokeSi
 {
@@ -19,7 +20,7 @@ namespace PokeSi
         public static object GetSimpleNodeContent<T>(string name, XmlElement parent, T defaultVal)
         {
             XmlElement elem = (XmlElement)parent.GetElementsByTagName(name).Item(0);
-            if (elem != null)
+            if (elem != null && elem.FirstChild != null)
             {
                 if (defaultVal is string)
                     return elem.FirstChild.Value;
@@ -49,6 +50,27 @@ namespace PokeSi
         public static XmlElement GetElement(string name, XmlElement parent)
         {
             return (XmlElement)parent.GetElementsByTagName(name).Item(0);
+        }
+
+        public static XmlElement CreateRectangleElement(string name, Rectangle rect, XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement(name);
+            elem.AppendChild(CreateSimpleNode("X", rect.X, doc));
+            elem.AppendChild(CreateSimpleNode("Y", rect.Y, doc));
+            elem.AppendChild(CreateSimpleNode("Width", rect.Width, doc));
+            elem.AppendChild(CreateSimpleNode("Height", rect.Height, doc));
+            return elem;
+        }
+
+        public static Rectangle GetRectangle(string name, XmlElement parent)
+        {
+            XmlElement elem = GetElement(name, parent);
+            Rectangle rect = new Rectangle();
+            rect.X = (int)GetSimpleNodeContent<int>("X", elem, 0);
+            rect.Y = (int)GetSimpleNodeContent<int>("Y", elem, 0);
+            rect.Width = (int)GetSimpleNodeContent<int>("Width", elem, 0);
+            rect.Height = (int)GetSimpleNodeContent<int>("Height", elem, 0);
+            return rect;
         }
     }
 }
