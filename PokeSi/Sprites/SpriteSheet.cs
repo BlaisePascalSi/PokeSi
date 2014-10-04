@@ -11,69 +11,42 @@ namespace PokeSi.Sprites
 {
     public class SpriteSheet
     {
-        public Texture2D Sheet { get; protected set; }
+        public Texture2D Texture { get; protected set; }
         public string Path { get; protected set; }
-        public int SpriteWidth { get; protected set; }
+        public List<Sprite> Sprites { get; protected set; }
+
+        /*public int SpriteWidth { get; protected set; }
         public int SpriteHeight { get; protected set; }
         private int offsetX;
-        private int offsetY;
-        private Sprite[,] sprites;
+        private int offsetY;*/
 
-        public SpriteSheet(PokeSiGame game, string fileName, int spriteWidth, int spriteHeight, int offsetX = 0, int offsetY = 0)
+        public SpriteSheet(PokeSiGame game, string fileName)
         {
-            Sheet = game.Content.Load<Texture2D>(fileName);
+            Texture = game.Content.Load<Texture2D>(fileName);
             Path = fileName;
-
-            SpriteWidth = spriteWidth;
-            SpriteHeight = spriteHeight;
-            this.offsetX = offsetX;
-            this.offsetY = offsetY;
-
-            int nbSpriteX = Sheet.Width / (spriteWidth + offsetX);
-            int nbSpriteY = Sheet.Height / (spriteHeight + offsetY);
-
-            sprites = new Sprite[nbSpriteX, nbSpriteY];
-            for (int y = 0; y < nbSpriteY; y++)
-                for (int x = 0; x < nbSpriteX; x++)
-                    sprites[x, y] = new Sprite(this, new Rectangle(x * (spriteWidth + offsetX), y * (spriteHeight + offsetY), spriteWidth, spriteHeight));
+            Sprites = new List<Sprite>();
         }
         public SpriteSheet(XmlDocument doc, XmlElement parent, PokeSiGame game)
         {
             string fileName = (string)XmlHelper.GetSimpleNodeContent<string>("Path", parent, "");
-            Sheet = game.Content.Load<Texture2D>(fileName);
+            Texture = game.Content.Load<Texture2D>(fileName);
             Path = fileName;
-
-            SpriteWidth = (int)XmlHelper.GetSimpleNodeContent<int>("Width", parent, 1);
-            SpriteHeight = (int)XmlHelper.GetSimpleNodeContent<int>("Height", parent, 1);
-            offsetX = (int)XmlHelper.GetSimpleNodeContent<int>("XOffset", parent, 0);
-            offsetY = (int)XmlHelper.GetSimpleNodeContent<int>("YOffset", parent, 0);
-
-            int nbSpriteX = Sheet.Width / (SpriteWidth + offsetX);
-            int nbSpriteY = Sheet.Height / (SpriteHeight + offsetY);
-
-            sprites = new Sprite[nbSpriteX, nbSpriteY];
-            for (int y = 0; y < nbSpriteY; y++)
-                for (int x = 0; x < nbSpriteX; x++)
-                    sprites[x, y] = new Sprite(this, new Rectangle(x * (SpriteWidth + offsetX), y * (SpriteHeight + offsetY), SpriteWidth, SpriteHeight));
+            Sprites = new List<Sprite>();
         }
 
         public Sprite GetSprite(int x, int y)
         {
-            return sprites[x, y];
+            return null;// sprites[x, y];
         }
 
         public Rectangle GetSpriteRect(int x, int y)
         {
-            return sprites[x, y].SourceRect;
+            return Rectangle.Empty; // sprites[x, y].SourceRect;
         }
 
         public void Save(XmlDocument doc, XmlElement parent)
         {
             parent.AppendChild(XmlHelper.CreateSimpleNode("Path", Path, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Width", SpriteWidth, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Height", SpriteHeight, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("XOffset", offsetX, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("YOffset", offsetY, doc));
         }
     }
 }

@@ -22,8 +22,8 @@ namespace PokeSi.Sprites
             Sprites = new Dictionary<string, Sprite>();
             Animations = new Dictionary<string, Animation>();
 
-           
-            /*XmlDocument doc = new XmlDocument();
+
+            XmlDocument doc = new XmlDocument();
             doc.Load(path);
 
             XmlElement sheetsElem = (XmlElement)doc.GetElementsByTagName("SpriteSheets").Item(0);
@@ -35,8 +35,8 @@ namespace PokeSi.Sprites
                 Sprites.Add(elem.Name, new Sprite(doc, elem, this));
 
             XmlElement animsElem = (XmlElement)doc.GetElementsByTagName("Animations").Item(0);
-            foreach (XmlElement elem in spritesElem.ChildNodes)
-                Animations.Add(elem.Name, new Animation(doc, elem, this));*/
+            foreach (XmlElement elem in animsElem.ChildNodes)
+                Animations.Add(elem.Name, new Animation(doc, elem, this));
         }
 
         public void Save(string path)
@@ -95,18 +95,25 @@ namespace PokeSi.Sprites
         {
             if (SpriteSheets.ContainsKey(name))
                 return SpriteSheets[name];
+            if (SpriteSheets.Count > 0)
+                return SpriteSheets.First().Value;
             return null;
         }
         public Sprite GetSprite(string name)
         {
             if (Sprites.ContainsKey(name))
                 return Sprites[name];
+            if (Sprites.Count > 0)
+                return Sprites.First().Value;
             return null;
         }
         public Animation GetAnimation(string name)
         {
             if (Animations.ContainsKey(name))
                 return Animations[name];
+            if (Animations.Count > 0)
+                return Animations.First().Value;
+            Add("base", new Animation(this, new string[] { "base" }, 1));
             return null;
         }
 
@@ -127,6 +134,14 @@ namespace PokeSi.Sprites
             if (Animations.ContainsValue(anim))
                 return Animations.Where(pair => pair.Value == anim).First().Key;
             return "";
+        }
+
+        public SpriteSheet FindSpriteSheet(Func<KeyValuePair<string, SpriteSheet>, bool> predicate)
+        {
+            IEnumerable<KeyValuePair<string, SpriteSheet>> result = SpriteSheets.Where(predicate);
+            if (result.Count() > 0)
+                return result.First().Value;
+            return null;
         }
     }
 }

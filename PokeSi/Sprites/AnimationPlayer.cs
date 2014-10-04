@@ -14,7 +14,15 @@ namespace PokeSi.Sprites
         public Animation Animation { get; protected set; }
         public int FrameIndex { get; protected set; }
 
-        private float time;
+        public Sprite CurrentSprite
+        {
+            get
+            {
+                if (Animation == null)
+                    return null;
+                return Animation.Sprites[FrameIndex];
+            }
+        }
 
         public AnimationPlayer()
         {
@@ -30,7 +38,6 @@ namespace PokeSi.Sprites
             // Start the new animation.
             Animation = animation;
             FrameIndex = 0;
-            time = 0.0f;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle destinationRect, Color color, float depth = 0.5f, SpriteEffects spriteEffects = SpriteEffects.None)
@@ -40,9 +47,10 @@ namespace PokeSi.Sprites
 
             FrameIndex = (int)(gameTime.TotalGameTime.TotalSeconds / Animation.FrameTime % Animation.FrameCount);
 
-            spriteBatch.Draw(Animation.SpriteSheet.Sheet, destinationRect,
-                Animation.SpriteSheet.GetSpriteRect(Animation.XBase + Animation.XMult * FrameIndex, Animation.YBase + Animation.YMult * FrameIndex),
-                color, 0.0f, Vector2.Zero, spriteEffects, depth);
+            if (CurrentSprite != null)
+                spriteBatch.Draw(CurrentSprite.Sheet.Texture, destinationRect,
+                    Animation.Sprites[FrameIndex].SourceRect,
+                    color, 0.0f, Vector2.Zero, spriteEffects, depth);
         }
     }
 }

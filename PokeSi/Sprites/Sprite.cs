@@ -16,8 +16,9 @@ namespace PokeSi.Sprites
         public int Width { get { return SourceRect.Width; } }
         public int Height { get { return SourceRect.Height; } }
 
-        public Sprite(SpriteSheet sheet, Rectangle sourceRect)
+        public Sprite(SpriteSheet sheet, Rectangle sourceRect, Resources res)
         {
+            Resources = res;
             Sheet = sheet;
             SourceRect = sourceRect;
         }

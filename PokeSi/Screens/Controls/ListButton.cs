@@ -53,7 +53,7 @@ namespace PokeSi.Screens.Controls
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.Draw(Sprite.Sheet.Sheet, DestinationRect, Sprite.SourceRect, Color.White);
+            spriteBatch.Draw(Sprite.Sheet.Texture, DestinationRect, Sprite.SourceRect, Color.White);
             if (List.Count > CurrentIndex)
                 spriteBatch.DrawString(font, List[CurrentIndex], new Vector2(DestinationRect.X, DestinationRect.Y), Color.White);
         }

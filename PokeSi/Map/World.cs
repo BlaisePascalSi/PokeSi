@@ -21,7 +21,7 @@ namespace PokeSi.Map
         public readonly static int Width = 64;
         public readonly static int Height = 32;
 
-        public float ScalingFactor { get { return Tile.Width / Tile.TileSheet.SpriteWidth; } }
+        public float ScalingFactor { get { return Tile.Width / 16f; } } // TODO : Use none hard coded value
 
         public WorldScreen Screen { get; protected set; }
         public Resources Resources { get; protected set; }
@@ -33,12 +33,14 @@ namespace PokeSi.Map
         private Tile[,] Tiles;
         public Dictionary<int, Entity> Entities { get; protected set; }
 
-        public World(WorldScreen screen)
+        public World(WorldScreen screen, XmlDocument doc, XmlElement parent)
         {
             Screen = screen;
             Tiles = new Tile[Width, Height];
             Entities = new Dictionary<int, Entity>();
-            Entities.Add(0, new Person(this, "Player", Entity.Controllers.Keyboard));
+
+            Load(doc, parent);
+
             editor = new Editor(this);
             editorOn = false;
 
@@ -144,12 +146,12 @@ namespace PokeSi.Map
             parent.AppendChild(entitiesElem);
         }
 
-        public void Load(XmlDocument doc, XmlElement parent)
+        private void Load(XmlDocument doc, XmlElement parent)
         {
-            Tile.StaticLoad(this);
+            string path = (string)XmlHelper.GetSimpleNodeContent<string>("Resources", parent, "resources.xml");
+            Resources = new Resources(this, path);
 
-                string path = (string)XmlHelper.GetSimpleNodeContent<string>("Resources", parent, "resources.xml");
-                Resources = new Resources(this, path);
+            Tile.StaticLoad(this);
 
             if (XmlHelper.HasChild("Tiles", parent))
             {

@@ -22,16 +22,20 @@ namespace PokeSi.Map
         public ToggleButton TimeSwitch { get; protected set; }
         private Button selectTileButton;
         private TextBox textBox;
+        private Button editSpriteButton;
 
         public Editor(World world)
         {
             World = world;
 
-            SpriteSheet buttonSheet = new SpriteSheet(world.Screen.Manager.Game, "button.png", 100, 100);
-            textBox = new TextBox(world.Screen, new Rectangle(0, 0, 150, 20), buttonSheet, 0);
-            selectTileButton = new Button(world.Screen, new Rectangle(0, 20, 80, 20), buttonSheet, 0);
+            Sprite buttonSprite = World.Resources.GetSprite("button_idle");
+            Sprite[] buttonSpriteTab = new Sprite[] { buttonSprite, World.Resources.GetSprite("button_over"), World.Resources.GetSprite("button_pressed") };
+            SpriteSheet buttonSheet = new SpriteSheet(world.Screen.Manager.Game, "button.png");
+            textBox = new TextBox(world.Screen, new Rectangle(0, 0, 150, 20), buttonSpriteTab);
+            selectTileButton = new Button(world.Screen, new Rectangle(0, 20, 80, 20), buttonSpriteTab);
             selectTileButton.Text = "Save as";
             TimeSwitch = new ToggleButton(world.Screen, new Rectangle(world.Screen.Manager.Width - 40, 0, 40, 40), buttonSheet, 0);
+            editSpriteButton = new Button(world.Screen, new Rectangle(0, 60, 80, 20), buttonSpriteTab) { Text = "Sprites" };
         }
 
         private float lastClickTimer = 0;
@@ -42,6 +46,7 @@ namespace PokeSi.Map
             selectTileButton.Update(gameTime);
             textBox.Update(gameTime);
             TimeSwitch.Update(gameTime);
+            editSpriteButton.Update(gameTime);
 
             if (selectTileButton.IsPressed() && textBox.Text != "")
             {
@@ -50,6 +55,11 @@ namespace PokeSi.Map
                 World.Save(doc, world);
                 doc.AppendChild(world);
                 doc.Save(textBox.Text);
+            }
+
+            if (editSpriteButton.IsPressed())
+            {
+                World.Screen.Manager.OpenScreen(new AddSpriteScreen(World.Screen.Manager, World.Resources));
             }
 
             /*if (Input.LeftButton.Pressed)
@@ -82,7 +92,7 @@ namespace PokeSi.Map
                             if (toEdit.Bound.Contains(new Point(Input.X, Input.Y)))
                             {
                                 Form form = toEdit.GetEditingForm();
-                                currentFormScreen = new FormScreen(World.Screen.Manager, form);
+                                currentFormScreen = new FormScreen(World.Screen.Manager, form, World);
                                 currentEditable = toEdit;
                                 World.Screen.Manager.OpenScreen(currentFormScreen);
                                 return;
@@ -105,6 +115,7 @@ namespace PokeSi.Map
             selectTileButton.Draw(gameTime, spriteBatch);
             textBox.Draw(gameTime, spriteBatch);
             TimeSwitch.Draw(gameTime, spriteBatch);
+            editSpriteButton.Draw(gameTime, spriteBatch);
         }
     }
 }

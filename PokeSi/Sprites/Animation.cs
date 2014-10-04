@@ -11,26 +11,19 @@ namespace PokeSi.Sprites
     public class Animation
     {
         public Resources Resources { get; protected set; }
-        public SpriteSheet SpriteSheet { get; protected set; }
         public float FrameTime { get; set; }
-        public int FrameCount { get; set; }
-        public int XBase { get; set; }
-        public int YBase { get; set; }
-        public int XMult { get; set; }
-        public int YMult { get; set; }
+        public int FrameCount { get { return Sprites.Length; } }
+        public Sprite[] Sprites { get; protected set; }
         public bool IsLooping { get; set; }
         public SpriteEffects SpriteEffect { get; set; }
 
-        public Animation(SpriteSheet sheet, Resources res, float frameTime, int frameCount, int xBase = 0, int yBase = 0, int xMult = 1, int yMult = 0, bool isLooping = true)
+        public Animation(Resources res, string[] spritesKey, float frameTime, bool isLooping = true)
         {
             Resources = res;
-            SpriteSheet = sheet;
             FrameTime = frameTime;
-            FrameCount = frameCount;
-            XBase = xBase;
-            YBase = yBase;
-            XMult = xMult;
-            YMult = yMult;
+            Sprites = new Sprite[spritesKey.Length];
+            for (int i = 0; i < spritesKey.Length; i++)
+                Sprites[i] = Resources.GetSprite(spritesKey[i]);
             IsLooping = isLooping;
 
             if (FrameTime == 0)
@@ -39,13 +32,22 @@ namespace PokeSi.Sprites
         public Animation(XmlDocument doc, XmlElement parent, Resources res)
         {
             Resources = res;
-            SpriteSheet = res.SpriteSheets[(string)XmlHelper.GetSimpleNodeContent<string>("Sheet", parent, "")];
+            //SpriteSheet = Resources.GetSpriteSheet((string)XmlHelper.GetSimpleNodeContent<string>("Sheet", parent, ""));
             FrameTime = (float)XmlHelper.GetSimpleNodeContent<float>("FrameTime", parent, 1);
-            FrameCount = (int)XmlHelper.GetSimpleNodeContent<int>("FrameCount", parent, 1);
-            XBase = (int)XmlHelper.GetSimpleNodeContent<int>("XBase", parent, 0);
-            YBase = (int)XmlHelper.GetSimpleNodeContent<int>("YBase", parent, 0);
-            XMult = (int)XmlHelper.GetSimpleNodeContent<int>("XMult", parent, 1);
-            YMult = (int)XmlHelper.GetSimpleNodeContent<int>("YMult", parent, 0);
+
+            XmlElement spritesElem = XmlHelper.GetElement("Sprites", parent);
+            if (spritesElem != null)
+            {
+                Sprites = new Sprite[spritesElem.ChildNodes.Count];
+                for (int i = 0; i < Sprites.Length; i++)
+                    Sprites[i] = Resources.GetSprite((string)XmlHelper.GetSimpleNodeContent<string>("S" + i, parent, ""));
+            }
+            else
+            {
+                Sprites = new Sprite[1];
+                Sprites[0] = Resources.GetSprite("");
+            }
+
             IsLooping = (bool)XmlHelper.GetSimpleNodeContent<bool>("IsLooping", parent, true);
             SpriteEffect = (SpriteEffects)Enum.Parse(typeof(SpriteEffects), (string)XmlHelper.GetSimpleNodeContent<string>("Effect", parent, "None"));
 
@@ -55,13 +57,14 @@ namespace PokeSi.Sprites
 
         public void Save(XmlDocument doc, XmlElement parent)
         {
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Sheet", Resources.SpriteSheets.Where(pair => pair.Value == SpriteSheet).First().Key, doc));
+            //parent.AppendChild(XmlHelper.CreateSimpleNode("Sheet", Resources.SpriteSheets.Where(pair => pair.Value == SpriteSheet).First().Key, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("FrameTime", FrameTime, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("FrameCount", FrameCount, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("XBase", XBase, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("YBase", YBase, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("XMult", XMult, doc));
-            parent.AppendChild(XmlHelper.CreateSimpleNode("YMult", YMult, doc));
+
+            XmlElement spritesElem = doc.CreateElement("Sprites");
+            for (int i = 0; i < Sprites.Length; i++)
+                spritesElem.AppendChild(XmlHelper.CreateSimpleNode("S" + i, Resources.GetName(Sprites[i]), doc));
+            parent.AppendChild(spritesElem);
+
             parent.AppendChild(XmlHelper.CreateSimpleNode("IsLooping", IsLooping, doc));
             parent.AppendChild(XmlHelper.CreateSimpleNode("Effect", SpriteEffect, doc));
         }

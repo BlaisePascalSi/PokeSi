@@ -78,6 +78,8 @@ namespace PokeSi
             spriteBatch = new SpriteBatch(GraphicsDevice);
             blendState = BlendState.New(GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
 
+            DrawHelper.Load(this);
+
             Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             screenManager.Resize(Viewport.Width, Viewport.Height);

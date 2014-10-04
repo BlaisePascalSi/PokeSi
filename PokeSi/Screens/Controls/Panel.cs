@@ -64,7 +64,7 @@ namespace PokeSi.Screens.Controls
             base.Draw(gameTime, spriteBatch);
 
             if (Background != null)
-                spriteBatch.Draw(Background.Sheet.Sheet, DestinationRect, Background.SourceRect, Color.White);
+                spriteBatch.Draw(Background.Sheet.Texture, DestinationRect, Background.SourceRect, Color.White);
 
             foreach (Control control in SubControls.Values)
                 control.Draw(gameTime, spriteBatch);

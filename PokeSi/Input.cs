@@ -20,6 +20,9 @@ namespace PokeSi
 
         public static void Update()
         {
+            lastWheel = Wheel;
+            lastX = X;
+            lastY = Y;
             state = Game.Keyboard.GetState();
             mouseState = Game.Mouse.GetState();
         }
@@ -51,9 +54,15 @@ namespace PokeSi
         public static ButtonState LeftButton { get { return mouseState.LeftButton; } }
         public static ButtonState RightButton { get { return mouseState.RightButton; } }
         public static ButtonState MiddleButton { get { return mouseState.MiddleButton; } }
-        public static int WheelDelta { get { return mouseState.WheelDelta; } }
+        public static int Wheel { get { return mouseState.WheelDelta; } }
+        private static int lastWheel;
+        public static int WheelDelta { get { return Wheel - lastWheel; } }
 
         public static int X { get { return (int)(mouseState.X * Game.Viewport.Width); } }
+        private static int lastX;
+        public static int XDelta { get { return X - lastX; } }
         public static int Y { get { return (int)(mouseState.Y * Game.Viewport.Height); } }
+        private static int lastY;
+        public static int YDelta { get { return Y - lastY; } }
     }
 }

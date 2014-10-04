@@ -79,6 +79,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DrawHelper.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Map\Entities\Controller.cs" />
     <Compile Include="Map\Entities\Entity.cs" />
@@ -95,9 +96,12 @@
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Screens\AddSpriteSheetScreen.cs" />
+    <Compile Include="Screens\Controls\FileTree.cs" />
     <Compile Include="Screens\Controls\ListButton.cs" />
     <Compile Include="Screens\Controls\Panel.cs" />
     <Compile Include="Screens\Controls\TextBlock.cs" />
+    <Compile Include="Screens\Controls\TextureDrawer.cs" />
     <Compile Include="Screens\Controls\ToggleButton.cs" />
     <Compile Include="Screens\Controls\Button.cs" />
     <Compile Include="Screens\Controls\Control.cs" />
@@ -139,6 +143,16 @@
   <ItemGroup>
     <None Include="Content\button.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\Entities\player2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\pixelBlanc.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

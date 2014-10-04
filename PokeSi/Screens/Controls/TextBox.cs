@@ -14,20 +14,16 @@ namespace PokeSi.Screens.Controls
     public class TextBox : Control
     {
         public bool IsSelected { get; protected set; }
-        public SpriteSheet Sheet { get; protected set; }
-        private int X;
-        private int Y;
+        public Sprite[] Sprites { get; protected set; }
         public string Text { get; set; }
 
         private SpriteFont font;
 
-        public TextBox(Screen screen, Rectangle bound, SpriteSheet sheet, int x, int y = 0)
+        public TextBox(Screen screen, Rectangle bound, Sprite[] sprites)
             : base(screen)
         {
             Bound = bound;
-            Sheet = sheet;
-            X = x;
-            Y = y;
+            Sprites = sprites;
             Text = "";
 
             font = screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
@@ -61,9 +57,13 @@ namespace PokeSi.Screens.Controls
                         if (s.StartsWith("NumPad")) // Number
                             Text += s.Substring(s.Length - 1);
                         if (key == Keys.Back && Text.Length > 0)
-                            Text = Text.Remove(Text.Length - 1);
+                            Text = Text.Remove(Text.Length - 1); 
+                        if (key == Keys.D8)
+                            Text += maj ? "8" : "_";
                         if (key == Keys.OemPeriod)
                             Text += maj ? "." : ";";
+                        if (key == Keys.OemComma)
+                            Text += maj ? "?" : ",";
                         if (key == Keys.Enter || key == Keys.Escape)
                             IsSelected = false;
                     }
@@ -75,7 +75,8 @@ namespace PokeSi.Screens.Controls
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.Draw(Sheet.Sheet, DestinationRect, Sheet.GetSpriteRect(X + (IsSelected ? 1 : 0), Y), Color.White);
+            Sprite s = Sprites[IsSelected ? 1 : 0];
+            spriteBatch.Draw(s.Sheet.Texture, DestinationRect, s.SourceRect, Color.White);
             if (Text != "")
                 spriteBatch.DrawString(font, Text, new Vector2(DestinationRect.X, DestinationRect.Y), Color.White);
         }

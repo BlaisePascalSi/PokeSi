@@ -26,13 +26,11 @@ namespace PokeSi.Screens
         {
             base.LoadContent();
 
-            World = new World(this);
-
             XmlDocument doc = new XmlDocument();
             doc.Load("save.xml");
 
             XmlElement worldElem = (XmlElement)doc.GetElementsByTagName("World").Item(0);
-            World.Load(doc, worldElem);
+            World = new World(this, doc, worldElem);
         }
 
         public override void Close()
