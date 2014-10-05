@@ -7,6 +7,7 @@ using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
 using PokeSi.Screens.Controls;
+using PokeSi.Map.Tiles;
 using PokeSi.Sprites;
 
 namespace PokeSi.Screens
@@ -112,6 +113,12 @@ namespace PokeSi.Screens
                     Manager.OpenScreen(lastOpenedScreen);
                     return;
                 }
+                if (var is Tile)
+                {
+                    lastOpenedScreen = new AddTileScreen(Manager, Resources);
+                    Manager.OpenScreen(lastOpenedScreen);
+                    return;
+                }
             }
             if (removeButton.IsPressed() && listControl.SelectedItem != null)
             {
@@ -126,6 +133,11 @@ namespace PokeSi.Screens
                 if (var is Animation)
                 {
                     Resources.RemoveAnimation(listControl.SelectedItem);
+                    UpdateDatas();
+                }
+                if(var is Tile)
+                {
+                    Tile.UnLocatedTile.Remove(listControl.SelectedItem);
                     UpdateDatas();
                 }
             }
@@ -150,6 +162,15 @@ namespace PokeSi.Screens
                         lastOpenedScreen = null;
                     }
                 }
+                if (lastOpenedScreen is AddTileScreen)
+                {
+                    AddTileScreen s = (AddTileScreen)lastOpenedScreen;
+                    if (s.IsSubmitted)
+                    {
+                        UpdateDatas();
+                        lastOpenedScreen = null;
+                    }
+                }
             }
 
             if (submitButton.IsPressed())
@@ -164,6 +185,7 @@ namespace PokeSi.Screens
         {
             base.Draw(gameTime, isInForeground, spriteBatch);
 
+            bool drawTile = false;
             if (listControl.SelectedItem != null)
             {
                 T var = default(T);
@@ -176,7 +198,7 @@ namespace PokeSi.Screens
                     textureDrawer.SourceRect = sprite.SourceRect;
                     textureDrawer.Effect = SpriteEffects.None;
                 }
-                if (var is Animation)
+                else if (var is Animation)
                 {
                     Animation anim = Resources.GetAnimation(listControl.SelectedItem);
                     animPlayer.PlayAnimation(anim);
@@ -185,6 +207,8 @@ namespace PokeSi.Screens
                     textureDrawer.SourceRect = animPlayer.CurrentSprite.SourceRect;
                     textureDrawer.Effect = animPlayer.Animation.SpriteEffect;
                 }
+                else if(var is Tile)
+                    drawTile = true;
             }
             else
             {
@@ -192,6 +216,9 @@ namespace PokeSi.Screens
                 textureDrawer.SourceRect = null;
             }
             panel.Draw(gameTime, spriteBatch);
+
+            if(drawTile)
+                Tile.UnLocatedTile[listControl.SelectedItem].Draw(gameTime, spriteBatch, 0, 0, textureDrawer.DestinationRect);
         }
     }
 }

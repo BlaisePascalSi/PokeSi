@@ -68,10 +68,11 @@ namespace PokeSi.Screens.Controls
                 {
                     for (int i = 0; i < list.Count; i++)
                     {
-                        if (list[i].DestinationRect.Contains(Input.X, Input.Y))
+                        if (list[i].DestinationRect.Contains(Input.X, Input.Y) && stack.Elements.Contains(list[i]))
                         {
                             SelectedItem = list[i].Text;
                             SelectedIndex = i;
+                            break;
                         }
                     }
                 }
@@ -94,7 +95,7 @@ namespace PokeSi.Screens.Controls
             if (toDraw.Count > 0 && SelectedItem != null)
             {
                 TextBlock textBlock = list[SelectedIndex];
-                if (textBlock != null && toDraw.Contains(textBlock) && stack.IsElementDisplayed(SelectedIndex))
+                if (textBlock != null && toDraw.Contains(textBlock) && stack.IsElementDisplayed(stack.Elements.IndexOf(textBlock)))
                     spriteBatch.Draw(background.Sheet.Texture, textBlock.DestinationRect, background.SourceRect, Color.White);
                 else
                     SelectedItem = null;

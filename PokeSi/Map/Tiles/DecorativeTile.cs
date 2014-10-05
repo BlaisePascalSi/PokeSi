@@ -19,9 +19,12 @@ namespace PokeSi.Map.Tiles
             : base(world)
         {
             Sprite = sprite;
+
+            if (Sprite == null)
+                Sprite = world.Resources.GetSprite("tile_grass");
         }
-        public DecorativeTile(XmlDocument doc, XmlElement parent, World world)
-            : base(world)
+
+        public override void Load(XmlDocument doc, XmlElement parent, World world)
         {
             Sprite = world.Resources.GetSprite((string)XmlHelper.GetSimpleNodeContent<string>("Sprite", parent, "tile_grass"));
         }

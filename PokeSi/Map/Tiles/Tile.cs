@@ -42,15 +42,14 @@ namespace PokeSi.Map.Tiles
             {
                 foreach (XmlElement tileElem in mainElem.ChildNodes)
                 {
-                    Tile tile = null;
                     string type = (string)XmlHelper.GetSimpleNodeContent<string>("Type", tileElem, "DecorativeTile");
-                    if (type == "DecorativeTile")
-                        tile = new DecorativeTile(doc, mainElem, world);
-                    else if (type == "AnimatedTile")
-                        tile = new AnimatedTile(doc, mainElem, world);
+                    Tile tile = GetTile(type, world);
 
                     if (tile != null)
+                    {
+                        tile.Load(doc, tileElem, world);
                         Tile.UnLocatedTile.Add(tileElem.Name, tile);
+                    }
                 }
             }
             else
@@ -67,16 +66,28 @@ namespace PokeSi.Map.Tiles
             foreach (KeyValuePair<string, Tile> pair in UnLocatedTile)
             {
                 XmlElement tileElem = doc.CreateElement(pair.Key);
-                tileElem.AppendChild(XmlHelper.CreateSimpleNode("Type", pair.Value.ToString().Split('.').Last(), doc));
+                tileElem.AppendChild(XmlHelper.CreateSimpleNode("Type", GetTileType(pair.Value), doc));
                 pair.Value.Save(doc, tileElem, world);
                 mainElem.AppendChild(tileElem);
             }
             parent.AppendChild(mainElem);
         }
 
-        public virtual void Load()
+        public static string GetTileType(Tile tile)
         {
-
+            return tile.ToString().Split('.').Last();
+        }
+        public static string[] GetTileTypes()
+        {
+            return new string[] { "DecorativeTile", "AnimatedTile" };
+        }
+        public static Tile GetTile(string type, World world)
+        {
+            if (type == "DecorativeTile")
+                return new DecorativeTile(world, null);
+            else if (type == "AnimatedTile")
+                return new AnimatedTile(world, null);
+            return null;
         }
 
         public virtual void Update(GameTime gameTime, int x, int y)
@@ -89,6 +100,10 @@ namespace PokeSi.Map.Tiles
 
         }
 
+        public virtual void Load(XmlDocument doc, XmlElement parent, World world)
+        {
+
+        }
         public virtual void Save(XmlDocument doc, XmlElement parent, World world)
         {
 

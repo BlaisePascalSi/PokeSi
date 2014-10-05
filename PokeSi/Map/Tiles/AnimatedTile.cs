@@ -20,11 +20,15 @@ namespace PokeSi.Map.Tiles
             : base(world)
         {
             Animation = animation;
+
+            if (Animation == null)
+                Animation = world.Resources.GetAnimation("tile_flower");
+
             AnimationPlayer = new AnimationPlayer();
             AnimationPlayer.PlayAnimation(Animation);
         }
-        public AnimatedTile(XmlDocument doc, XmlElement parent, World world)
-            : base(world)
+
+        public override void Load(XmlDocument doc, XmlElement parent, World world)
         {
             Animation = world.Resources.GetAnimation((string)XmlHelper.GetSimpleNodeContent<string>("Animation", parent, "tile_flower"));
             AnimationPlayer = new AnimationPlayer();

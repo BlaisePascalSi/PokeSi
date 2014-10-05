@@ -18,16 +18,19 @@ namespace PokeSi.Map
     public class Editor
     {
         public World World { get; protected set; }
+        public Tile CurrentTile { get; protected set; }
 
         public ToggleButton TimeSwitch { get; protected set; }
         private Button selectTileButton;
         private TextBox textBox;
         private Button editSpriteButton;
         private Button editAnimationButton;
+        private Button editTileButton;
 
         public Editor(World world)
         {
             World = world;
+            CurrentTile = null;
 
             Sprite buttonSprite = World.Resources.GetSprite("button_idle");
             Sprite[] buttonSpriteTab = new Sprite[] { buttonSprite, World.Resources.GetSprite("button_over"), World.Resources.GetSprite("button_pressed") };
@@ -37,11 +40,13 @@ namespace PokeSi.Map
             TimeSwitch = new ToggleButton(world.Screen, new Rectangle(world.Screen.Manager.Width - 40, 0, 40, 40), buttonSpriteTab);
             editSpriteButton = new Button(world.Screen, new Rectangle(0, 60, 100, 20), buttonSpriteTab) { Text = "Sprites" };
             editAnimationButton = new Button(world.Screen, new Rectangle(0, 80, 100, 20), buttonSpriteTab) { Text = "Animations" };
+            editTileButton = new Button(world.Screen, new Rectangle(0, 100, 100, 20), buttonSpriteTab) { Text = "Tiles" };
         }
 
         private float lastClickTimer = 0;
         private FormScreen currentFormScreen;
         private IEditable currentEditable;
+        private ListPresenterScreen<Tile> lastTileSelector = null;
         public void Update(GameTime gameTime)
         {
             selectTileButton.Update(gameTime);
@@ -49,6 +54,7 @@ namespace PokeSi.Map
             TimeSwitch.Update(gameTime);
             editSpriteButton.Update(gameTime);
             editAnimationButton.Update(gameTime);
+            editTileButton.Update(gameTime);
 
             if (selectTileButton.IsPressed() && textBox.Text != "")
             {
@@ -67,6 +73,17 @@ namespace PokeSi.Map
             {
                 World.Screen.Manager.OpenScreen(new ListPresenterScreen<Animation>(World.Screen.Manager, World.Resources, delegate() { return World.Resources.Animations; }));
             }
+            if (editTileButton.IsPressed())
+            {
+                lastTileSelector = new ListPresenterScreen<Tile>(World.Screen.Manager, World.Resources, delegate() { return Tile.UnLocatedTile; });
+                World.Screen.Manager.OpenScreen(lastTileSelector);
+            }
+            if (lastTileSelector != null && lastTileSelector.IsSubmitted)
+            {
+                if (lastTileSelector.SelectedItem != null)
+                    CurrentTile = Tile.UnLocatedTile[lastTileSelector.SelectedItem];
+                lastTileSelector = null;
+            }
 
             /*if (Input.LeftButton.Pressed)
             {
@@ -78,7 +95,7 @@ namespace PokeSi.Map
             {
                 int x = Input.X / Tile.Width;
                 int y = Input.Y / Tile.Height;
-                World.SetTile(x, y, Tile.UnLocatedTile["Flower"]);
+                World.SetTile(x, y, CurrentTile);
             }
 
             // Double click
@@ -110,9 +127,9 @@ namespace PokeSi.Map
                         for (int x = 0; x < World.Width; x++)
                         {
                             Tile tile = World.GetTile(x, y);
-                            if(tile is IEditable)
+                            if (tile is IEditable)
                             {
-                                if(new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height).Contains(Input.X, Input.Y))
+                                if (new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height).Contains(Input.X, Input.Y))
                                 {
                                     Form form = tile.GetEditingForm();
                                     currentFormScreen = new FormScreen(World.Screen.Manager, form, World);
@@ -141,6 +158,7 @@ namespace PokeSi.Map
             TimeSwitch.Draw(gameTime, spriteBatch);
             editSpriteButton.Draw(gameTime, spriteBatch);
             editAnimationButton.Draw(gameTime, spriteBatch);
+            editTileButton.Draw(gameTime, spriteBatch);
         }
     }
 }

@@ -98,6 +98,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Screens\AddAnimationScreen.cs" />
     <Compile Include="Screens\AddSpriteScreen.cs" />
+    <Compile Include="Screens\AddTileScreen.cs" />
     <Compile Include="Screens\Controls\FileTree.cs" />
     <Compile Include="Screens\Controls\ListButton.cs" />
     <Compile Include="Screens\Controls\Panel.cs" />
