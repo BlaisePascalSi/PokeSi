@@ -21,7 +21,7 @@ namespace PokeSi.Screens.Controls
             {
                 int max = 0;
                 foreach (Control c in SubControls.Values)
-                    max = Math.Max(max, c.Bound.X + c.Bound.Width);
+                    max = Math.Max(max, c.DestinationRect.X + c.DestinationRect.Width);
                 return max + 2 * Pading;
             }
         }
@@ -32,7 +32,7 @@ namespace PokeSi.Screens.Controls
             {
                 int max = 0;
                 foreach (Control c in SubControls.Values)
-                    max = Math.Max(max, c.Bound.Y + c.Bound.Height);
+                    max = Math.Max(max, c.DestinationRect.Y + c.DestinationRect.Height);
                 return max + 2 * Pading;
             }
         }

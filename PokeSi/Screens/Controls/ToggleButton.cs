@@ -21,20 +21,16 @@ namespace PokeSi.Screens.Controls
 
         public State CurrentState { get; protected set; }
         public State LastState { get; protected set; }
-        public SpriteSheet Sheet { get; protected set; }
-        private int X;
-        private int Y;
+        public Sprite[] Sprites { get; protected set; }
         public string Text { get; set; }
 
         private SpriteFont font;
 
-        public ToggleButton(Screen screen, Rectangle bound, SpriteSheet sheet, int x, int y = 0)
+        public ToggleButton(Screen screen, Rectangle bound, Sprite[] sprites)
             : base(screen)
         {
             Bound = bound;
-            Sheet = sheet;
-            X = x;
-            Y = y;
+            Sprites = sprites;
             Text = "";
 
             font = screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
@@ -75,7 +71,7 @@ namespace PokeSi.Screens.Controls
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.Draw(Sheet.Texture, DestinationRect, Sheet.GetSpriteRect(X + (int)CurrentState, Y), Color.White);
+            spriteBatch.Draw(Sprites[(int)CurrentState].Sheet.Texture, DestinationRect, Sprites[(int)CurrentState].SourceRect, Color.White);
             if (Text != "")
                 spriteBatch.DrawString(font, Text, new Vector2(DestinationRect.X, DestinationRect.Y), Color.White);
         }

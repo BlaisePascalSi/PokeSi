@@ -23,6 +23,7 @@ namespace PokeSi.Map
         private Button selectTileButton;
         private TextBox textBox;
         private Button editSpriteButton;
+        private Button editAnimationButton;
 
         public Editor(World world)
         {
@@ -30,12 +31,12 @@ namespace PokeSi.Map
 
             Sprite buttonSprite = World.Resources.GetSprite("button_idle");
             Sprite[] buttonSpriteTab = new Sprite[] { buttonSprite, World.Resources.GetSprite("button_over"), World.Resources.GetSprite("button_pressed") };
-            SpriteSheet buttonSheet = new SpriteSheet(world.Screen.Manager.Game, "button.png");
             textBox = new TextBox(world.Screen, new Rectangle(0, 0, 150, 20), buttonSpriteTab);
             selectTileButton = new Button(world.Screen, new Rectangle(0, 20, 80, 20), buttonSpriteTab);
             selectTileButton.Text = "Save as";
-            TimeSwitch = new ToggleButton(world.Screen, new Rectangle(world.Screen.Manager.Width - 40, 0, 40, 40), buttonSheet, 0);
-            editSpriteButton = new Button(world.Screen, new Rectangle(0, 60, 80, 20), buttonSpriteTab) { Text = "Sprites" };
+            TimeSwitch = new ToggleButton(world.Screen, new Rectangle(world.Screen.Manager.Width - 40, 0, 40, 40), buttonSpriteTab);
+            editSpriteButton = new Button(world.Screen, new Rectangle(0, 60, 100, 20), buttonSpriteTab) { Text = "Sprites" };
+            editAnimationButton = new Button(world.Screen, new Rectangle(0, 80, 100, 20), buttonSpriteTab) { Text = "Animations" };
         }
 
         private float lastClickTimer = 0;
@@ -47,6 +48,7 @@ namespace PokeSi.Map
             textBox.Update(gameTime);
             TimeSwitch.Update(gameTime);
             editSpriteButton.Update(gameTime);
+            editAnimationButton.Update(gameTime);
 
             if (selectTileButton.IsPressed() && textBox.Text != "")
             {
@@ -59,7 +61,11 @@ namespace PokeSi.Map
 
             if (editSpriteButton.IsPressed())
             {
-                World.Screen.Manager.OpenScreen(new AddSpriteScreen(World.Screen.Manager, World.Resources));
+                World.Screen.Manager.OpenScreen(new ListPresenterScreen<Sprite>(World.Screen.Manager, World.Resources, delegate() { return World.Resources.Sprites; }));
+            }
+            if (editAnimationButton.IsPressed())
+            {
+                World.Screen.Manager.OpenScreen(new ListPresenterScreen<Animation>(World.Screen.Manager, World.Resources, delegate() { return World.Resources.Animations; }));
             }
 
             /*if (Input.LeftButton.Pressed)
@@ -116,6 +122,7 @@ namespace PokeSi.Map
             textBox.Draw(gameTime, spriteBatch);
             TimeSwitch.Draw(gameTime, spriteBatch);
             editSpriteButton.Draw(gameTime, spriteBatch);
+            editAnimationButton.Draw(gameTime, spriteBatch);
         }
     }
 }

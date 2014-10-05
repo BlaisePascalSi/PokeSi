@@ -91,6 +91,22 @@ namespace PokeSi.Sprites
                 Animations.Add(name, animation);
         }
 
+        public void RemoveSpriteSheet(string name)
+        {
+            if (SpriteSheets.ContainsKey(name))
+                SpriteSheets.Remove(name);
+        }
+        public void RemoveSprite(string name)
+        {
+            if (Sprites.ContainsKey(name))
+                Sprites.Remove(name);
+        }
+        public void RemoveAnimation(string name)
+        {
+            if (Animations.ContainsKey(name))
+                Animations.Remove(name);
+        }
+
         public SpriteSheet GetSpriteSheet(string name)
         {
             if (SpriteSheets.ContainsKey(name))

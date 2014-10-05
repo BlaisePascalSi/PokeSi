@@ -23,7 +23,6 @@ namespace PokeSi.Screens
 
         private Button submitButton;
         private Panel panel;
-        //private Dictionary<string, Control> controls;
 
         public FormScreen(ScreenManager manager, Form baseForm, World world)
             : base(manager)
@@ -42,9 +41,8 @@ namespace PokeSi.Screens
 
             Sprite buttonSprite = World.Resources.GetSprite("button_idle");
             Sprite[] buttonSpriteTab = new Sprite[] { buttonSprite, World.Resources.GetSprite("button_over"), World.Resources.GetSprite("button_pressed") };
-            SpriteSheet buttonSheet = new SpriteSheet(Manager.Game, "button.png");
             font = Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
-            panel = new Panel(this, new Rectangle(0, 0, Manager.Width, Manager.Height), buttonSheet.GetSprite(0, 0));
+            panel = new Panel(this, new Rectangle(0, 0, Manager.Width, Manager.Height), buttonSprite);
 
             Rectangle nextRectangle = new Rectangle(100, 0, 160, 20);
             foreach (KeyValuePair<string, object> pair in Form.Datas)
@@ -57,35 +55,35 @@ namespace PokeSi.Screens
                 }
                 else if (pair.Value is bool)
                 {
-                    panel.AddControl(pair.Key, new ToggleButton(this, nextRectangle, buttonSheet, 0));
+                    panel.AddControl(pair.Key, new ToggleButton(this, nextRectangle, buttonSpriteTab));
                     ((ToggleButton)panel.SubControls[pair.Key]).SetState((bool)pair.Value);
                 }
                 else if (pair.Value is Enum)
                 {
                     Type enumType = pair.Value.GetType();
-                    ListButton control = new ListButton(this, nextRectangle, buttonSheet.GetSprite(0, 0), new List<string>(Enum.GetNames(enumType)));
+                    ListButton control = new ListButton(this, nextRectangle, buttonSprite, new List<string>(Enum.GetNames(enumType)));
                     control.SelectValue(Enum.GetName(enumType, pair.Value));
                     panel.AddControl(pair.Key, control);
                 }
                 else if (pair.Value is Controller)
                 {
-                    ListButton control = new ListButton(this, nextRectangle, buttonSheet.GetSprite(0, 0), new List<string>(Entity.Controllers.GetAll()));
+                    ListButton control = new ListButton(this, nextRectangle, buttonSprite, new List<string>(Entity.Controllers.GetAll()));
                     control.SelectValue(Entity.Controllers.GetName((Controller)pair.Value));
                     panel.AddControl(pair.Key, control);
                 }
-                else if (pair.Value is SpriteSheet)
+                else if (pair.Value is Animation)
                 {
                     Rectangle rect = nextRectangle;
                     rect.Right -= 30;
-                    ListButton control = new ListButton(this, rect, buttonSheet.GetSprite(0, 0), new List<string>(World.Resources.SpriteSheets.Keys));
-                    control.SelectValue(World.Resources.GetName((SpriteSheet)pair.Value));
+                    ListButton control = new ListButton(this, rect, buttonSprite, new List<string>(World.Resources.Animations.Keys));
+                    control.SelectValue(World.Resources.GetName((Animation)pair.Value));
                     panel.AddControl(pair.Key, control);
                     rect.Left = rect.Right;
                     rect.Right += 30;
                     rect.Left += 10;
                     Button button = new Button(this, rect, buttonSpriteTab);
                     button.Text = "...";
-                    panel.AddControl("addSpriteSheet_" + pair.Key, button);
+                    panel.AddControl("addAnimation_" + pair.Key, button);
                 }
                 nextRectangle.Y += 30;
             }
@@ -106,7 +104,8 @@ namespace PokeSi.Screens
             panel.Bound = new Rectangle(x, y, panel.PreferableWidth, panel.PreferableHeight);
         }
 
-        private AddSpriteScreen currentSpriteSheetScreen = null;
+        private string lastButtonKey = null;
+        private ListPresenterScreen<Animation> lastAnimSelectScreen = null;
         public override void Update(GameTime gameTime, bool isInForeground)
         {
             base.Update(gameTime, isInForeground);
@@ -118,30 +117,29 @@ namespace PokeSi.Screens
 
             foreach (KeyValuePair<string, Control> pair in panel.SubControls)
             {
-                if (pair.Key.StartsWith("addSpriteSheet_"))
+                if (pair.Key.StartsWith("addAnimation_"))
                 {
                     Button button = (Button)pair.Value;
                     if (button.IsPressed())
                     {
-                        currentSpriteSheetScreen = new AddSpriteScreen(Manager, World.Resources);
-                        Manager.OpenScreen(currentSpriteSheetScreen);
+                        lastAnimSelectScreen = new ListPresenterScreen<Animation>(Manager, World.Resources, delegate() { return World.Resources.Animations; });
+                        Manager.OpenScreen(lastAnimSelectScreen);
+                        lastButtonKey = pair.Key;
+                        return;
                     }
                 }
             }
-            /*if (currentSpriteSheetScreen != null && currentSpriteSheetScreen.IsSubmitted)
+
+            if (lastAnimSelectScreen != null && lastAnimSelectScreen.IsSubmitted && lastButtonKey != null)
             {
-                string key = currentSpriteSheetScreen.FinalSheet.Path.Split('/', '\\').Last();
-                World.Resources.Add(key, currentSpriteSheetScreen.FinalSheet);
-                foreach (KeyValuePair<string, object> pair in Form.Datas)
+                if (lastAnimSelectScreen.SelectedItem != null)
                 {
-                    if (pair.Value is SpriteSheet)
-                    {
-                        ListButton list = (ListButton)panel.SubControls[pair.Key];
-                        list.List.Add(key);
-                    }
+                    ListButton listButton = (ListButton)panel.SubControls[lastButtonKey.Split('_').Last()];
+                    listButton.SelectValue(lastAnimSelectScreen.SelectedItem);
                 }
-                currentSpriteSheetScreen = null;
-            }*/
+                lastAnimSelectScreen = null;
+                lastButtonKey = null;
+            }
 
             if (submitButton.IsPressed())
             {
@@ -166,10 +164,10 @@ namespace PokeSi.Screens
                             ListButton control = (ListButton)pair.Value;
                             Form.Datas[pair.Key] = Entity.Controllers.Get(control.List[control.CurrentIndex]);
                         }
-                        else if (Form.Datas[pair.Key] is SpriteSheet)
+                        else if (Form.Datas[pair.Key] is Animation)
                         {
                             ListButton control = (ListButton)pair.Value;
-                            Form.Datas[pair.Key] = World.Resources.GetSpriteSheet(control.List[control.CurrentIndex]);
+                            Form.Datas[pair.Key] = World.Resources.GetAnimation(control.List[control.CurrentIndex]);
                         }
                     }
                 }

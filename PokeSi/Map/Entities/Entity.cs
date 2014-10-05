@@ -65,11 +65,9 @@ namespace PokeSi.Map.Entities
         public float Speed { get { return SpeedCoefficient * Tile.Width * World.ScalingFactor; } }
 
         public AnimationPlayer AnimationPlayer { get; protected set; }
-        private Vector2 origin;
         public Vector2 Origin
         {
-            get { return origin; }
-            protected set { origin = value; }
+            get { return AnimationPlayer.CurrentSprite.Origin; }
         }
 
         public Rectangle DestinationRect

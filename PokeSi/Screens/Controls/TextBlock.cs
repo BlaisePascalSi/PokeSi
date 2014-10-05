@@ -19,16 +19,16 @@ namespace PokeSi.Screens.Controls
             : base(screen)
         {
             Text = text;
-            Bound = new Rectangle((int)position.X, (int)position.Y, 100, 20);
             Color = Color.Black;
             font = screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
+            Bound = new Rectangle((int)position.X, (int)position.Y, (int)font.MeasureString(Text).X + 10, 20);
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             base.Draw(gameTime, spriteBatch);
 
-            spriteBatch.DrawString(font, Text, DestinationRect.Location, Color);
+            spriteBatch.DrawString(font, Text, DestinationRect.Location + new Vector2(5, -1), Color);
         }
     }
 }

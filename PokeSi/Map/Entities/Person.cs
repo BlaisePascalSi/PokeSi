@@ -37,23 +37,8 @@ namespace PokeSi.Map.Entities
             SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png");
             world.Resources.Add("player.png", SpriteSheet);
             Idle = new Animation[4];
-            /*Idle[(int)Direction.Down] = new Animation("player.png", world.Resources, 0, 1, 0, 0);
-            Idle[(int)Direction.Up] = new Animation("player.png", world.Resources, 0, 1, 1, 0);
-            Idle[(int)Direction.Right] = new Animation("player.png", world.Resources, 0, 1, 2, 0);
-            Idle[(int)Direction.Left] = new Animation("player.png", world.Resources, 0, 1, 2, 0);
-            Idle[(int)Direction.Left].SpriteEffect = SpriteEffects.FlipHorizontally;*/
             Walking = new Animation[4];
-            /* Walking[(int)Direction.Down] = new Animation("player.png", world.Resources, 0.25f, 4, 0, 1);
-             Walking[(int)Direction.Up] = new Animation("player.png", world.Resources, 0.25f, 4, 4, 1);
-             Walking[(int)Direction.Right] = new Animation("player.png", world.Resources, 0.25f, 4, 8, 1);
-             Walking[(int)Direction.Left] = new Animation("player.png", world.Resources, 0.25f, 4, 8, 1);
-             Walking[(int)Direction.Left].SpriteEffect = SpriteEffects.FlipHorizontally;*/
             Running = new Animation[4];
-            /*Running[(int)Direction.Down] = new Animation("player.png", world.Resources, 0.25f, 4, 0, 2);
-            Running[(int)Direction.Up] = new Animation("player.png", world.Resources, 0.25f, 4, 4, 2);
-            Running[(int)Direction.Right] = new Animation("player.png", world.Resources, 0.25f, 4, 8, 2);
-            Running[(int)Direction.Left] = new Animation("player.png", world.Resources, 0.25f, 4, 8, 2);
-            Running[(int)Direction.Left].SpriteEffect = SpriteEffects.FlipHorizontally;*/
 
             Name = name;
             AnimationPlayer.PlayAnimation(Idle[(int)Direction.Down]);
@@ -158,9 +143,6 @@ namespace PokeSi.Map.Entities
                 parent.AppendChild(XmlHelper.CreateSimpleNode("Controller", Controller, doc));
 
             parent.AppendChild(XmlHelper.CreateSimpleNode("Sheet", World.Resources.GetName(SpriteSheet), doc));
-            /*XmlElement sheetElem = doc.CreateElement("Sheet");
-            SpriteSheet.Save(doc, sheetElem);
-            parent.AppendChild(sheetElem);*/
 
             XmlElement idleElem = doc.CreateElement("Idle");
             for (int i = 0; i < 4; i++)
@@ -188,7 +170,14 @@ namespace PokeSi.Map.Entities
             result.Datas.Add("Name", Name);
             result.Datas.Add("Direction", CurrentDirection);
             result.Datas.Add("Controller", Controller);
-            //result.Datas.Add("Sheet", SpriteSheet);
+            result.Datas.Add("Idle Down", Idle[(int)Direction.Down]);
+            result.Datas.Add("Idle Up", Idle[(int)Direction.Up]);
+            result.Datas.Add("Idle Right", Idle[(int)Direction.Right]);
+            result.Datas.Add("Idle Left", Idle[(int)Direction.Left]);
+            result.Datas.Add("Walk Down", Walking[(int)Direction.Down]);
+            result.Datas.Add("Walk Up", Walking[(int)Direction.Up]);
+            result.Datas.Add("Walk Right", Walking[(int)Direction.Right]);
+            result.Datas.Add("Walk Left", Walking[(int)Direction.Left]);
 
             return result;
         }
@@ -201,20 +190,14 @@ namespace PokeSi.Map.Entities
             Name = (string)form.Datas["Name"];
             CurrentDirection = (Direction)form.Datas["Direction"];
             Controller = (Controller)form.Datas["Controller"];
-            //SpriteSheet = (SpriteSheet)form.Datas["Sheet"];
-
-            /*Idle[(int)Direction.Down].SetSheet(World.Resources.GetName(SpriteSheet));
-            Idle[(int)Direction.Up].SetSheet(World.Resources.GetName(SpriteSheet));
-            Idle[(int)Direction.Left].SetSheet(World.Resources.GetName(SpriteSheet));
-            Idle[(int)Direction.Right].SetSheet(World.Resources.GetName(SpriteSheet));
-            Walking[(int)Direction.Down].SetSheet(World.Resources.GetName(SpriteSheet));
-            Walking[(int)Direction.Up].SetSheet(World.Resources.GetName(SpriteSheet));
-            Walking[(int)Direction.Left].SetSheet(World.Resources.GetName(SpriteSheet));
-            Walking[(int)Direction.Right].SetSheet(World.Resources.GetName(SpriteSheet));
-            Running[(int)Direction.Down].SetSheet(World.Resources.GetName(SpriteSheet));
-            Running[(int)Direction.Up].SetSheet(World.Resources.GetName(SpriteSheet));
-            Running[(int)Direction.Left].SetSheet(World.Resources.GetName(SpriteSheet));
-            Running[(int)Direction.Right].SetSheet(World.Resources.GetName(SpriteSheet));*/
+            Idle[(int)Direction.Down] = (Animation)form.Datas["Idle Down"];
+            Idle[(int)Direction.Up] = (Animation)form.Datas["Idle Up"];
+            Idle[(int)Direction.Right] = (Animation)form.Datas["Idle Right"];
+            Idle[(int)Direction.Left] = (Animation)form.Datas["Idle Left"];
+            Walking[(int)Direction.Down] = (Animation)form.Datas["Walk Down"];
+            Walking[(int)Direction.Up] = (Animation)form.Datas["Walk Up"];
+            Walking[(int)Direction.Right] = (Animation)form.Datas["Walk Right"];
+            Walking[(int)Direction.Left] = (Animation)form.Datas["Walk Left"];
         }
     }
 }

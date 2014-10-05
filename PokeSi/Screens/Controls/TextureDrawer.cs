@@ -13,6 +13,11 @@ namespace PokeSi.Screens.Controls
     public class TextureDrawer : Control
     {
         public Texture2D Texture { get; set; }
+        public Rectangle? SourceRect { get; set; }
+        public SpriteEffects Effect { get; set; }
+
+        public bool SelectionMode { get; set; }
+        public bool SelectPointMode { get; set; }
 
         public int PreferableWidth { get { return Texture.Width; } }
         public int PreferableHeight { get { return Texture.Height; } }
@@ -21,6 +26,7 @@ namespace PokeSi.Screens.Controls
         public Vector2 Position { get; protected set; }
 
         public Rectangle? SelectedRectangle { get; protected set; }
+        public Vector2? SelectedPoint { get; protected set; }
 
         public TextureDrawer(Screen screen, Rectangle bound, Texture2D texture)
             : base(screen)
@@ -29,6 +35,10 @@ namespace PokeSi.Screens.Controls
             Texture = texture;
             Zoom = 1f;
             Position = new Vector2(0, 0);
+            SelectionMode = false;
+            SelectPointMode = false;
+            SourceRect = null;
+            Effect = SpriteEffects.None;
         }
 
         private Vector2 selectionStartPoint;
@@ -39,23 +49,34 @@ namespace PokeSi.Screens.Controls
 
             if (DestinationRect.Contains(Input.X, Input.Y) && Texture != null)
             {
+                int texWidth = SourceRect == null ? Texture.Width : SourceRect.Value.Width;
+                int texHeight = SourceRect == null ? Texture.Height : SourceRect.Value.Height;
+
                 if (Input.WheelDelta != 0)
                     Zoom += 10 * Zoom / Input.WheelDelta;
                 Zoom = MathUtil.Clamp(Zoom, 0.05f, 1f);
 
                 if (Input.MiddleButton.Down)
                     Position -= new Vector2(Input.XDelta, Input.YDelta) * Zoom;
-                Vector2 max = new Vector2((float)(Texture.Width - DestinationRect.Width * ratioWPixelScreenPicture),
-                            (float)(Texture.Height - DestinationRect.Height * ratioHPixelScreenPicture));
+                Vector2 max = new Vector2((float)(texWidth - DestinationRect.Width * ratioWPixelScreenPicture),
+                            (float)(texHeight - DestinationRect.Height * ratioHPixelScreenPicture));
                 max.X = max.X < 0 ? 0 : max.X;
                 max.Y = max.Y < 0 ? 0 : max.Y;
                 Position = DrawHelper.ClampVector(Position, Vector2.Zero, max);
 
                 if (Input.LeftButton.Pressed)
                 {
-                    isSelecting = true;
-                    SelectedRectangle = null;
-                    selectionStartPoint = ConvertScreenToPicture(new Vector2(Input.X, Input.Y));
+                    if (SelectionMode)
+                    {
+                        isSelecting = true;
+                        SelectedRectangle = null;
+                        selectionStartPoint = ConvertScreenToPicture(new Vector2(Input.X, Input.Y));
+                    }
+                }
+                if (Input.RightButton.Pressed)
+                {
+                    if (SelectPointMode)
+                        SelectedPoint = ConvertScreenToPicture(new Vector2(Input.X, Input.Y));
                 }
             }
 
@@ -78,9 +99,14 @@ namespace PokeSi.Screens.Controls
 
             if (Texture != null)
             {
+                int texX = SourceRect == null ? 0 : SourceRect.Value.X;
+                int texY = SourceRect == null ? 0 : SourceRect.Value.Y;
+                int texWidth = SourceRect == null ? Texture.Width : SourceRect.Value.Width;
+                int texHeight = SourceRect == null ? Texture.Height : SourceRect.Value.Height;
+
                 RectangleF rect = DestinationRect;
                 float rectRatio = rect.Width / (float)rect.Height;
-                float textureRatio = Texture.Width / (float)Texture.Height;
+                float textureRatio = texWidth / (float)texHeight;
                 if (rectRatio < textureRatio)
                 {
                     float ratio = rectRatio / textureRatio;
@@ -101,16 +127,19 @@ namespace PokeSi.Screens.Controls
                 double wRatio = final.Width / (double)rect.Width;
                 double hRatio = final.Height / (double)rect.Height;
 
-                Rectangle sourceRect = new Rectangle((int)Position.X, (int)Position.Y, (int)(Texture.Width * wRatio), (int)(Texture.Height * hRatio));
+                Rectangle sourceRect = new Rectangle((int)Position.X + texX, (int)Position.Y + texY, (int)(texWidth * wRatio), (int)(texHeight * hRatio));
 
                 ratioWPixelScreenPicture = sourceRect.Width / final.Width;
                 ratioHPixelScreenPicture = sourceRect.Height / final.Height;
 
-                spriteBatch.Draw(Texture, new Rectangle((int)final.X, (int)final.Y, (int)final.Width, (int)final.Height), sourceRect, Color.White);
+                spriteBatch.Draw(Texture, new Rectangle((int)final.X, (int)final.Y, (int)final.Width, (int)final.Height), sourceRect, Color.White, 0, Vector2.Zero, Effect, 0.5f);
 
-                Vector2 crossPos = new Vector2(Input.X, Input.Y);
-                if (DestinationRect.Contains(crossPos))
-                    DrawHelper.DrawCross(spriteBatch, crossPos, DestinationRect, Color.DeepPink);
+                if (SelectionMode)
+                {
+                    Vector2 crossPos = new Vector2(Input.X, Input.Y);
+                    if (DestinationRect.Contains(crossPos))
+                        DrawHelper.DrawCross(spriteBatch, crossPos, DestinationRect, Color.DeepPink);
+                }
 
                 if (isSelecting)
                 {
@@ -131,6 +160,13 @@ namespace PokeSi.Screens.Controls
                     Rectangle selected = (Rectangle)SelectedRectangle;
                     selected.Right -= 1; selected.Bottom -= 1;
                     DrawHelper.DrawFilledRectangle(spriteBatch, DrawHelper.ClampRectangle(ConvertPictureToScreen(selected), DestinationRect), greenA);
+                }
+
+                if (SelectPointMode && SelectedPoint != null)
+                {
+                    Color redA = Color.Red; redA.A = 100;
+                    Rectangle point = new Rectangle((int)SelectedPoint.Value.X, (int)SelectedPoint.Value.Y, 0, 0);
+                    DrawHelper.DrawFilledRectangle(spriteBatch, DrawHelper.ClampRectangle(ConvertPictureToScreen(point), DestinationRect), redA);
                 }
             }
         }

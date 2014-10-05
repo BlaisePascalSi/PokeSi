@@ -45,12 +45,17 @@ namespace PokeSi.Sprites
             if (Animation == null)
                 throw new NotSupportedException("No animation is currently playing.");
 
-            FrameIndex = (int)(gameTime.TotalGameTime.TotalSeconds / Animation.FrameTime % Animation.FrameCount);
+            SimulateTime(gameTime);
 
             if (CurrentSprite != null)
                 spriteBatch.Draw(CurrentSprite.Sheet.Texture, destinationRect,
                     Animation.Sprites[FrameIndex].SourceRect,
                     color, 0.0f, Vector2.Zero, spriteEffects, depth);
+        }
+
+        public void SimulateTime(GameTime gameTime)
+        {
+            FrameIndex = (int)(gameTime.TotalGameTime.TotalSeconds / Animation.FrameTime % Animation.FrameCount);
         }
     }
 }

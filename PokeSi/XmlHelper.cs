@@ -61,16 +61,35 @@ namespace PokeSi
             elem.AppendChild(CreateSimpleNode("Height", rect.Height, doc));
             return elem;
         }
+        public static XmlElement CreatePointElement(string name, Point point, XmlDocument doc)
+        {
+            XmlElement elem = doc.CreateElement(name);
+            elem.AppendChild(CreateSimpleNode("X", point.X, doc));
+            elem.AppendChild(CreateSimpleNode("Y", point.Y, doc));
+            return elem;
+        }
 
         public static Rectangle GetRectangle(string name, XmlElement parent)
         {
             XmlElement elem = GetElement(name, parent);
+            if (elem == null)
+                return Rectangle.Empty;
             Rectangle rect = new Rectangle();
             rect.X = (int)GetSimpleNodeContent<int>("X", elem, 0);
             rect.Y = (int)GetSimpleNodeContent<int>("Y", elem, 0);
             rect.Width = (int)GetSimpleNodeContent<int>("Width", elem, 0);
             rect.Height = (int)GetSimpleNodeContent<int>("Height", elem, 0);
             return rect;
+        }
+        public static Point GetPoint(string name, XmlElement parent)
+        {
+            XmlElement elem = GetElement(name, parent);
+            if (elem == null)
+                return Point.Zero;
+            Point point = new Point();
+            point.X = (int)GetSimpleNodeContent<int>("X", elem, 0);
+            point.Y = (int)GetSimpleNodeContent<int>("Y", elem, 0);
+            return point;
         }
     }
 }

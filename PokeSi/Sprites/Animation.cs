@@ -11,7 +11,8 @@ namespace PokeSi.Sprites
     public class Animation
     {
         public Resources Resources { get; protected set; }
-        public float FrameTime { get; set; }
+        private float frameTime;
+        public float FrameTime { get { return frameTime; } set { frameTime = value; if (frameTime == 0)frameTime = 1; } }
         public int FrameCount { get { return Sprites.Length; } }
         public Sprite[] Sprites { get; protected set; }
         public bool IsLooping { get; set; }
@@ -21,14 +22,19 @@ namespace PokeSi.Sprites
         {
             Resources = res;
             FrameTime = frameTime;
-            Sprites = new Sprite[spritesKey.Length];
-            for (int i = 0; i < spritesKey.Length; i++)
-                Sprites[i] = Resources.GetSprite(spritesKey[i]);
             IsLooping = isLooping;
-
+            SetSprites(spritesKey);
             if (FrameTime == 0)
                 FrameTime = 1;
         }
+
+        public void SetSprites(string[] spritesKey)
+        {
+            Sprites = new Sprite[spritesKey.Length];
+            for (int i = 0; i < spritesKey.Length; i++)
+                Sprites[i] = Resources.GetSprite(spritesKey[i]);
+        }
+
         public Animation(XmlDocument doc, XmlElement parent, Resources res)
         {
             Resources = res;

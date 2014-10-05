@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -62,7 +61,7 @@ namespace PokeSi.Screens
             addSpriteText = new TextBox(this, new Rectangle(treeWidth + 60, treeHeight + 30, 140, 20), buttonSpriteTab);
             panel.AddControl("addSpriteText", addSpriteText);
 
-            textureDrawer = new TextureDrawer(this, new Rectangle(treeWidth, 10, 300, treeHeight - 10), null);
+            textureDrawer = new TextureDrawer(this, new Rectangle(treeWidth, 10, 300, treeHeight - 10), null) { SelectionMode = true, SelectPointMode = true };
             panel.AddControl("textureDrawer", textureDrawer);
 
             coordinate = new TextBlock(this, new Vector2(100, treeHeight + 30), "");
@@ -100,16 +99,17 @@ namespace PokeSi.Screens
                 Manager.CloseScreen();
             }
 
-            if (addSpriteButton.IsPressed() && textureDrawer.SelectedRectangle != null)
+            if (addSpriteButton.IsPressed() && textureDrawer.SelectedRectangle != null && textureDrawer.SelectedPoint != null)
             {
-                SpriteSheet sheet = Resources.FindSpriteSheet(x => x.Value.Path == tree.SelectedElement.Path.Substring(8));
+                SpriteSheet sheet = Resources.GetSpriteSheet(tree.SelectedElement.Path.Split('/', '\\').Last());
                 if (sheet == null)
                 {
                     sheet = new SpriteSheet(Manager.Game, tree.SelectedElement.Path.Substring(8));
                     Resources.Add(tree.SelectedElement.Path.Split('/', '\\').Last(), sheet);
                 }
                 Rectangle r = textureDrawer.SelectedRectangle.Value;
-                Resources.Add(addSpriteText.Text, new Sprite(sheet, (Rectangle)textureDrawer.SelectedRectangle, Resources));
+                Point origin = new Point((int)textureDrawer.SelectedPoint.Value.X - r.Location.X, (int)textureDrawer.SelectedPoint.Value.Y - r.Location.Y);
+                Resources.Add(addSpriteText.Text, new Sprite(sheet, (Rectangle)textureDrawer.SelectedRectangle, origin, Resources));
             }
 
             Vector2 vec = textureDrawer.ConvertScreenToPicture(new Vector2(Input.X, Input.Y));

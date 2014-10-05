@@ -96,10 +96,13 @@
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Screens\AddSpriteSheetScreen.cs" />
+    <Compile Include="Screens\AddAnimationScreen.cs" />
+    <Compile Include="Screens\AddSpriteScreen.cs" />
     <Compile Include="Screens\Controls\FileTree.cs" />
     <Compile Include="Screens\Controls\ListButton.cs" />
     <Compile Include="Screens\Controls\Panel.cs" />
+    <Compile Include="Screens\Controls\SearchableList.cs" />
+    <Compile Include="Screens\Controls\Stack.cs" />
     <Compile Include="Screens\Controls\TextBlock.cs" />
     <Compile Include="Screens\Controls\TextureDrawer.cs" />
     <Compile Include="Screens\Controls\ToggleButton.cs" />
@@ -107,6 +110,7 @@
     <Compile Include="Screens\Controls\Control.cs" />
     <Compile Include="Screens\Controls\TextBox.cs" />
     <Compile Include="Screens\FormScreen.cs" />
+    <Compile Include="Screens\ListPresenterScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />
     <Compile Include="Screens\NoneTransition.cs" />
     <Compile Include="Screens\Screen.cs" />
