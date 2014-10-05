@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -10,7 +11,7 @@ using PokeSi.Sprites;
 
 namespace PokeSi.Map.Tiles
 {
-    public class Tile
+    public class Tile : IEditable
     {
         public readonly static int Width = 32;
         public readonly static int Height = 32;
@@ -20,23 +21,57 @@ namespace PokeSi.Map.Tiles
         private static bool hasLoaded = false;
 
         public World World { get; private set; }
+        public Rectangle Bound { get { throw new NotImplementedException(); } }
 
         public Tile(World world)
         {
             World = world;
         }
 
-        public static void StaticLoad(World world)
+        public static void StaticLoad(XmlDocument doc, XmlElement parent, World world)
         {
             if (hasLoaded)
                 return;
 
-            Tile.TileSheet = new SpriteSheet(world.Screen.Manager.Game, "tiles.png");
-            world.Resources.Add("tiles", Tile.TileSheet);
+            //Tile.TileSheet = new SpriteSheet(world.Screen.Manager.Game, "tiles.png");
+            //world.Resources.Add("tiles", Tile.TileSheet);
+            XmlElement mainElem = XmlHelper.GetElement("TileUnLocated", parent);
+
             Tile.UnLocatedTile = new Dictionary<string, Tile>();
-            Tile.UnLocatedTile.Add("Grass", new DecorativeTile(world, TileSheet, 3, 0));
-            Tile.UnLocatedTile.Add("Flower", new AnimatedTile(world, new Animation(world.Resources, new string[]{""}, 2f)));
+            if (mainElem != null)
+            {
+                foreach (XmlElement tileElem in mainElem.ChildNodes)
+                {
+                    Tile tile = null;
+                    string type = (string)XmlHelper.GetSimpleNodeContent<string>("Type", tileElem, "DecorativeTile");
+                    if (type == "DecorativeTile")
+                        tile = new DecorativeTile(doc, mainElem, world);
+                    else if (type == "AnimatedTile")
+                        tile = new AnimatedTile(doc, mainElem, world);
+
+                    if (tile != null)
+                        Tile.UnLocatedTile.Add(tileElem.Name, tile);
+                }
+            }
+            else
+            {
+                Tile.UnLocatedTile.Add("Grass", new DecorativeTile(world, world.Resources.GetSprite("tile_grass")));
+                Tile.UnLocatedTile.Add("Flower", new AnimatedTile(world, new Animation(world.Resources, new string[] { "" }, 2f)));
+            }
             hasLoaded = true;
+        }
+
+        public static void StaticSave(XmlDocument doc, XmlElement parent, World world)
+        {
+            XmlElement mainElem = doc.CreateElement("TileUnLocated");
+            foreach (KeyValuePair<string, Tile> pair in UnLocatedTile)
+            {
+                XmlElement tileElem = doc.CreateElement(pair.Key);
+                tileElem.AppendChild(XmlHelper.CreateSimpleNode("Type", pair.Value.ToString().Split('.').Last(), doc));
+                pair.Value.Save(doc, tileElem, world);
+                mainElem.AppendChild(tileElem);
+            }
+            parent.AppendChild(mainElem);
         }
 
         public virtual void Load()
@@ -50,6 +85,21 @@ namespace PokeSi.Map.Tiles
         }
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
+        {
+
+        }
+
+        public virtual void Save(XmlDocument doc, XmlElement parent, World world)
+        {
+
+        }
+
+        public virtual Form GetEditingForm()
+        {
+            return new Form();
+        }
+
+        public virtual void SubmitForm(Form form)
         {
 
         }

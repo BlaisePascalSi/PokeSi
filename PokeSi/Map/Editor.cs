@@ -95,13 +95,31 @@ namespace PokeSi.Map
                         if (ent is IEditable)
                         {
                             IEditable toEdit = (IEditable)ent;
-                            if (toEdit.Bound.Contains(new Point(Input.X, Input.Y)))
+                            if (toEdit.Bound.Contains(Input.X, Input.Y))
                             {
                                 Form form = toEdit.GetEditingForm();
                                 currentFormScreen = new FormScreen(World.Screen.Manager, form, World);
                                 currentEditable = toEdit;
                                 World.Screen.Manager.OpenScreen(currentFormScreen);
                                 return;
+                            }
+                        }
+                    }
+                    for (int y = 0; y < World.Height; y++)
+                    {
+                        for (int x = 0; x < World.Width; x++)
+                        {
+                            Tile tile = World.GetTile(x, y);
+                            if(tile is IEditable)
+                            {
+                                if(new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height).Contains(Input.X, Input.Y))
+                                {
+                                    Form form = tile.GetEditingForm();
+                                    currentFormScreen = new FormScreen(World.Screen.Manager, form, World);
+                                    currentEditable = tile;
+                                    World.Screen.Manager.OpenScreen(currentFormScreen);
+                                    return;
+                                }
                             }
                         }
                     }

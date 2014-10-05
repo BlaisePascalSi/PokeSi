@@ -96,6 +96,15 @@ namespace PokeSi.Map
                 editor.Draw(gameTime, spriteBatch);
         }
 
+        public Tile GetTile(int x ,int y)
+        {
+            if (x < 0 || x >= Width)
+                return null;
+            if (y < 0 || y >= Height)
+                return null;
+
+            return Tiles[x, y];
+        }
         public void SetTile(int x, int y, Tile tile)
         {
             if (tile == null)
@@ -112,6 +121,8 @@ namespace PokeSi.Map
         {
             parent.AppendChild(XmlHelper.CreateSimpleNode("Resources", "resources.xml", doc));
             Resources.Save("resources.xml");
+
+            Tile.StaticSave(doc, parent, this);
 
             XmlElement tilesElem = doc.CreateElement("Tiles");
             for (int y = 0; y < Height; y++)
@@ -151,7 +162,7 @@ namespace PokeSi.Map
             string path = (string)XmlHelper.GetSimpleNodeContent<string>("Resources", parent, "resources.xml");
             Resources = new Resources(this, path);
 
-            Tile.StaticLoad(this);
+            Tile.StaticLoad(doc, parent, this);
 
             if (XmlHelper.HasChild("Tiles", parent))
             {
