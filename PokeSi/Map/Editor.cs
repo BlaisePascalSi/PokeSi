@@ -85,12 +85,6 @@ namespace PokeSi.Map
                 lastTileSelector = null;
             }
 
-            /*if (Input.LeftButton.Pressed)
-            {
-                int x = Input.X / Tile.Width;
-                int y = Input.Y / Tile.Height;
-                World.SetTile(x, y, Tile.UnLocatedTile["Grass"]);
-            }*/
             if (Input.RightButton.Pressed)
             {
                 int x = Input.X / Tile.Width;

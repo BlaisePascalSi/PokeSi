@@ -102,7 +102,7 @@ namespace PokeSi.Screens
             if (addSpriteButton.IsPressed() && textureDrawer.SelectedRectangle != null && textureDrawer.SelectedPoint != null)
             {
                 SpriteSheet sheet = Resources.GetSpriteSheet(tree.SelectedElement.Path.Split('/', '\\').Last());
-                if (sheet == null)
+                if (!Resources.SpriteSheets.ContainsKey(tree.SelectedElement.Path.Split('/', '\\').Last()))
                 {
                     sheet = new SpriteSheet(Manager.Game, tree.SelectedElement.Path.Substring(8));
                     Resources.Add(tree.SelectedElement.Path.Split('/', '\\').Last(), sheet);

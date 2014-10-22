@@ -139,9 +139,12 @@ namespace PokeSi.Map
                     }
                     else
                     {
-                        XmlElement tileElem = doc.CreateElement("UnLoc_" + x + "_" + y);
-                        tileElem.AppendChild(doc.CreateTextNode(Tile.UnLocatedTile.Where(t => t.Value == tile).First().Key));
-                        tilesElem.AppendChild(tileElem);
+                        if (Tile.UnLocatedTile.ContainsValue(tile))
+                        {
+                            XmlElement tileElem = doc.CreateElement("UnLoc_" + x + "_" + y);
+                            tileElem.AppendChild(doc.CreateTextNode(Tile.UnLocatedTile.Where(t => t.Value == tile).First().Key));
+                            tilesElem.AppendChild(tileElem);
+                        }
                     }
                 }
             }

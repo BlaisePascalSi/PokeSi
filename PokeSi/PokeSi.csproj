@@ -93,6 +93,7 @@
     <Compile Include="Map\Editor.cs" />
     <Compile Include="Map\Tiles\LocatedTile.cs" />
     <Compile Include="Map\Tiles\Tile.cs" />
+    <Compile Include="Map\Tiles\TileableTile.cs" />
     <Compile Include="Map\World.cs" />
     <Compile Include="PokeSiGame.cs" />
     <Compile Include="Program.cs" />
@@ -158,6 +159,11 @@
   <ItemGroup>
     <None Include="Content\pixelBlanc.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\fence.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

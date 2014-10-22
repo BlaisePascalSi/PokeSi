@@ -33,8 +33,6 @@ namespace PokeSi.Map.Tiles
             if (hasLoaded)
                 return;
 
-            //Tile.TileSheet = new SpriteSheet(world.Screen.Manager.Game, "tiles.png");
-            //world.Resources.Add("tiles", Tile.TileSheet);
             XmlElement mainElem = XmlHelper.GetElement("TileUnLocated", parent);
 
             Tile.UnLocatedTile = new Dictionary<string, Tile>();
@@ -79,7 +77,7 @@ namespace PokeSi.Map.Tiles
         }
         public static string[] GetTileTypes()
         {
-            return new string[] { "DecorativeTile", "AnimatedTile" };
+            return new string[] { "DecorativeTile", "AnimatedTile", "TileableTile" };
         }
         public static Tile GetTile(string type, World world)
         {
@@ -87,6 +85,8 @@ namespace PokeSi.Map.Tiles
                 return new DecorativeTile(world, null);
             else if (type == "AnimatedTile")
                 return new AnimatedTile(world, null);
+            else if (type == "TileableTile")
+                return new TileableTile(world, null);
             return null;
         }
 
