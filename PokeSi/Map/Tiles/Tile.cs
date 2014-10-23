@@ -72,11 +72,11 @@ namespace PokeSi.Map.Tiles
 
         public static string GetTileType(Tile tile)
         {
-            return tile.ToString().Split('.').Last();
+            return tile.GetType().Name;
         }
         public static string[] GetTileTypes()
         {
-            return new string[] { "DecorativeTile", "AnimatedTile", "TileableTile" };
+            return new string[] { "DecorativeTile", "AnimatedTile", "TileableTile", "HouseTile" };
         }
         public static Tile GetTile(string type, World world)
         {
@@ -85,7 +85,9 @@ namespace PokeSi.Map.Tiles
             else if (type == "AnimatedTile")
                 return new AnimatedTile(world, null);
             else if (type == "TileableTile")
-                return new TileableTile(world, null);
+                return new TileableTile(world);
+            else if (type == "HouseTile")
+                return new HouseTile(world, 0, 0);
             return null;
         }
 

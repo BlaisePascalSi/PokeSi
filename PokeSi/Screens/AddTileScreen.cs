@@ -97,11 +97,21 @@ namespace PokeSi.Screens
             }
             if (currentFormScreen != null && currentFormScreen.IsSubmitted && currentTile != null)
             {
-                currentTile.SubmitForm(currentFormScreen.Form);
-                if (!Tile.UnLocatedTile.ContainsKey(tileName.Text))
-                    Tile.UnLocatedTile.Add(tileName.Text, currentTile);
-                currentFormScreen = null;
-                currentTile = null;
+                if (currentTile is LocatedTile)
+                {
+                    currentTile.SubmitForm(currentFormScreen.Form);
+                    currentFormScreen = null;
+                    Editor.SetCurrentTile(currentTile);
+                    Manager.CloseScreen();
+                }
+                else
+                {
+                    currentTile.SubmitForm(currentFormScreen.Form);
+                    if (!Tile.UnLocatedTile.ContainsKey(tileName.Text))
+                        Tile.UnLocatedTile.Add(tileName.Text, currentTile);
+                    currentFormScreen = null;
+                    currentTile = null;
+                }
             }
 
             if (submitButton.IsPressed())

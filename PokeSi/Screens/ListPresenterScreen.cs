@@ -170,6 +170,11 @@ namespace PokeSi.Screens
                         UpdateDatas();
                         lastOpenedScreen = null;
                     }
+                    else
+                    {
+                        Manager.CloseScreen();
+                        lastOpenedScreen = null;
+                    }
                 }
             }
 

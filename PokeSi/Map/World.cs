@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
+using System.Reflection;
 using SharpDX;
 using SharpDX.Toolkit;
 using SharpDX.Toolkit.Graphics;
@@ -96,7 +97,7 @@ namespace PokeSi.Map
                 editor.Draw(gameTime, spriteBatch);
         }
 
-        public Tile GetTile(int x ,int y)
+        public Tile GetTile(int x, int y)
         {
             if (x < 0 || x >= Width)
                 return null;
@@ -114,7 +115,42 @@ namespace PokeSi.Map
             if (y < 0 || y >= Height)
                 return;
 
+            // Check if it breaks a multiTile
+            if (Tiles[x, y] is MultiTileTile)
+            {
+                MultiTileTile mTile = (MultiTileTile)Tiles[x, y];
+                for (int i = -mTile.BlockCenter.X + mTile.X; i < mTile.BlockWidth - mTile.BlockCenter.X + mTile.X; i++)
+                {
+                    for (int j = -mTile.BlockCenter.Y + mTile.Y; j < mTile.BlockHeight - mTile.BlockCenter.Y + mTile.Y; j++)
+                    {
+                        if (i < 0 || i >= Width)
+                            continue;
+                        if (j < 0 || j >= Height)
+                            continue;
+                        Tiles[i, j] = Tile.UnLocatedTile["Grass"];
+                    }
+                }
+            }
+
+            // Put new tile
+            if (tile is LocatedTile)
+                ((LocatedTile)tile).MoveTo(x, y);
             Tiles[x, y] = tile;
+            if (tile is MultiTileTile)
+            {
+                MultiTileTile mTile = (MultiTileTile)tile;
+                for (int i = -mTile.BlockCenter.X + x; i < mTile.BlockWidth - mTile.BlockCenter.X + x; i++)
+                {
+                    for (int j = -mTile.BlockCenter.Y + y; j < mTile.BlockHeight - mTile.BlockCenter.Y + y; j++)
+                    {
+                        if (i < 0 || i >= Width)
+                            continue;
+                        if (j < 0 || j >= Height)
+                            continue;
+                        Tiles[i, j] = tile;
+                    }
+                }
+            }
         }
 
         public void Save(XmlDocument doc, XmlElement parent)
@@ -132,10 +168,17 @@ namespace PokeSi.Map
                     Tile tile = Tiles[x, y];
                     if (tile is LocatedTile)
                     {
-                        LocatedTile located = (LocatedTile)tile;
-                        XmlElement locTileElem = doc.CreateElement("Loc" + "_" + x + "_" + y);
-                        located.Save(doc, locTileElem);
-                        tilesElem.AppendChild(locTileElem);
+                        int k = 0;
+                        if (tile is MultiTileTile)
+                            k++;
+                        if (!(tile is MultiTileTile) || ((LocatedTile)tile).Position == new Vector2(x, y))
+                        {
+                            LocatedTile located = (LocatedTile)tile;
+                            XmlElement locTileElem = doc.CreateElement("Loc" + "_" + x + "_" + y);
+                            locTileElem.AppendChild(XmlHelper.CreateSimpleNode("Type", tile.GetType().Name, doc));
+                            located.Save(doc, locTileElem, this);
+                            tilesElem.AppendChild(locTileElem);
+                        }
                     }
                     else
                     {
@@ -176,7 +219,18 @@ namespace PokeSi.Map
                     string[] tab = nodeName.Split('_');
                     if (tab[0] == "Loc")
                     {
-                        // TODO Add load support for locatedTiles
+                        int x = int.Parse(tab[1]);
+                        int y = int.Parse(tab[2]);
+                        if (x < 0 || x >= Width)
+                            continue;
+                        if (y < 0 || y >= Height)
+                            continue;
+                        Type type = this.GetType().Assembly.GetType(typeof(Tile).Namespace + "." + (string)XmlHelper.GetSimpleNodeContent<string>("Type", tileElem, ""));
+                        if (type == null)
+                            continue;
+                        LocatedTile locTile = (LocatedTile)type.GetConstructor(new Type[] { typeof(World), typeof(int), typeof(int) }).Invoke(new object[] { this, x, y });
+                        locTile.Load(doc, tileElem, this);
+                        SetTile(x, y, locTile);
                     }
                     else if (tab[0] == "UnLoc")
                     {
@@ -187,7 +241,7 @@ namespace PokeSi.Map
                             continue;
                         if (y < 0 || y >= Height)
                             continue;
-                        Tiles[x, y] = Tile.UnLocatedTile[tileId];
+                        SetTile(x, y, Tile.UnLocatedTile[tileId]);
                     }
                 }
             }

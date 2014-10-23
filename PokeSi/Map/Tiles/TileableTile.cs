@@ -23,7 +23,7 @@ namespace PokeSi.Map.Tiles
         /// </summary>
         public Sprite[] Sprites { get; protected set; }
 
-        public TileableTile(World world, Animation animation)
+        public TileableTile(World world)
             : base(world)
         {
             Sprites = new Sprite[16];

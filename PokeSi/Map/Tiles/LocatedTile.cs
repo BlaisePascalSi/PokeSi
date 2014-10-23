@@ -16,10 +16,17 @@ namespace PokeSi.Map.Tiles
         public int Y { get; protected set; }
         public Vector2 Position { get { return new Vector2(X, Y); } }
 
-        public LocatedTile(World world)
+        public LocatedTile(World world, int x, int y)
             : base(world)
         {
+            X = x;
+            Y = y;
+        }
 
+        public virtual void MoveTo(int x, int y)
+        {
+            X = x;
+            Y = y;
         }
 
         public override void Update(GameTime gameTime, int x, int y)
@@ -46,11 +53,13 @@ namespace PokeSi.Map.Tiles
 
         }
 
-        public virtual void Save(XmlDocument doc, XmlNode parent)
+        public override void Load(XmlDocument doc, XmlElement parent, World world)
         {
-            XmlElement type = doc.CreateElement("Type");
-            type.AppendChild(doc.CreateTextNode(this.GetType().Name));
-            parent.AppendChild(type);
+
+        }
+        public override void Save(XmlDocument doc, XmlElement parent, World world)
+        {
+
         }
     }
 }

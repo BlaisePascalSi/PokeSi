@@ -91,6 +91,7 @@
     <Compile Include="Map\Tiles\AnimatedTile.cs" />
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />
+    <Compile Include="Map\Tiles\HouseTile.cs" />
     <Compile Include="Map\Tiles\LocatedTile.cs" />
     <Compile Include="Map\Tiles\MultiTileTile.cs" />
     <Compile Include="Map\Tiles\Tile.cs" />
@@ -164,6 +165,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\fence.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\pokeCenter.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

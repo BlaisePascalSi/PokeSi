@@ -18,7 +18,7 @@ namespace PokeSi.Map
     public class Editor
     {
         public World World { get; protected set; }
-        public Tile CurrentTile { get; protected set; }
+        public static Tile CurrentTile { get; protected set; }
 
         public ToggleButton TimeSwitch { get; protected set; }
         private Button selectTileButton;
@@ -143,6 +143,11 @@ namespace PokeSi.Map
                 currentFormScreen = null;
                 currentEditable = null;
             }
+        }
+        
+        public static void SetCurrentTile(Tile tile)
+        {
+            CurrentTile = tile;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)

@@ -39,8 +39,11 @@ namespace PokeSi.Screens
         }
         public virtual void Close()
         {
-            State = States.Closing;
-            ClosingTransition.Start();
+            if (State != States.FullyClosed && State != States.Closing)
+            {
+                State = States.Closing;
+                ClosingTransition.Start();
+            }
         }
 
         public virtual void Resize(int width, int height)

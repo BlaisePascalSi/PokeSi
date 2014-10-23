@@ -58,6 +58,16 @@ namespace PokeSi.Screens
                     panel.AddControl(pair.Key, new ToggleButton(this, nextRectangle, buttonSpriteTab));
                     ((ToggleButton)panel.SubControls[pair.Key]).SetState((bool)pair.Value);
                 }
+                else if (pair.Value is Point)
+                {
+                    Rectangle rect = nextRectangle;
+                    rect.Width = nextRectangle.Width / 2 - 5;
+                    panel.AddControl(pair.Key, new TextBox(this, rect, buttonSpriteTab));
+                    ((TextBox)panel.SubControls[pair.Key]).Text = ((Point)(pair.Value)).X.ToString();
+                    rect.X += rect.Width + 10;
+                    panel.AddControl(pair.Key + "_Y", new TextBox(this, rect, buttonSpriteTab));
+                    ((TextBox)panel.SubControls[pair.Key + "_Y"]).Text = ((Point)(pair.Value)).Y.ToString();
+                }
                 else if (pair.Value is Enum)
                 {
                     Type enumType = pair.Value.GetType();
@@ -189,6 +199,13 @@ namespace PokeSi.Screens
                             Form.Datas[pair.Key] = int.Parse(((TextBox)pair.Value).Text);
                         else if (Form.Datas[pair.Key] is float)
                             Form.Datas[pair.Key] = float.Parse(((TextBox)pair.Value).Text);
+                        else if(Form.Datas[pair.Key] is Point)
+                        {
+                            Point point = new Point();
+                            point.X = int.Parse(((TextBox)pair.Value).Text);
+                            point.Y = int.Parse(((TextBox)panel.SubControls[pair.Key + "_Y"]).Text);
+                            Form.Datas[pair.Key] = point;
+                        }
                         else if (Form.Datas[pair.Key] is Enum)
                         {
                             Type enumType = Form.Datas[pair.Key].GetType();
