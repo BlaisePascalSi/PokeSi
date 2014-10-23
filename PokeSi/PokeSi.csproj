@@ -92,6 +92,7 @@
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />
     <Compile Include="Map\Tiles\LocatedTile.cs" />
+    <Compile Include="Map\Tiles\MultiTileTile.cs" />
     <Compile Include="Map\Tiles\Tile.cs" />
     <Compile Include="Map\Tiles\TileableTile.cs" />
     <Compile Include="Map\World.cs" />

@@ -39,6 +39,13 @@ namespace PokeSi.Map.Tiles
             spriteBatch.Draw(Sprite.Sheet.Texture, destinationRect, Sprite.SourceRect, Color.White);
         }
 
+        public override Rectangle GetDestinationRect(int x, int y)
+        {
+            return DrawHelper.ExtendToContain(new Rectangle(x * Tile.Width - Sprite.Origin.X, y * Tile.Height - Sprite.Origin.Y, Sprite.Width, Sprite.Height),
+                                            new Rectangle(0, 0, Tile.Width, Tile.Height),
+                                            Sprite.Origin.X, Sprite.Origin.Y);
+        }
+
         public override Form GetEditingForm()
         {
             Form result = base.GetEditingForm();

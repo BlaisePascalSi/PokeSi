@@ -83,7 +83,7 @@ namespace PokeSi.Map
                 for (int x = 0; x < Width; x++)
                 {
                     Tile tile = Tiles[x, y];
-                    tile.Draw(gameTime, spriteBatch, x, y, new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height));
+                    tile.Draw(gameTime, spriteBatch, x, y, tile.GetDestinationRect(x, y));
                 }
             }
 

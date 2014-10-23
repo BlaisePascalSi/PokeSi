@@ -16,7 +16,6 @@ namespace PokeSi.Map.Tiles
         public readonly static int Width = 32;
         public readonly static int Height = 32;
 
-        public static SpriteSheet TileSheet { get; private set; }
         public static Dictionary<string, Tile> UnLocatedTile;
         private static bool hasLoaded = false;
 
@@ -107,6 +106,11 @@ namespace PokeSi.Map.Tiles
         public virtual void Save(XmlDocument doc, XmlElement parent, World world)
         {
 
+        }
+
+        public virtual Rectangle GetDestinationRect(int x, int y)
+        {
+            return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
         }
 
         public virtual Form GetEditingForm()

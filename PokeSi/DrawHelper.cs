@@ -26,6 +26,19 @@ namespace PokeSi
             return toClamp;
         }
 
+        public static Rectangle ExtendToContain(Rectangle toExtend, Rectangle toContain, int centerX = 0, int centerY = 0)
+        {
+            float horizontalRatio = toContain.Width / toExtend.Width;
+            float verticalRatio = toContain.Height / toExtend.Height;
+            float ratio = Math.Max(horizontalRatio, verticalRatio);
+            Rectangle result = toExtend;
+            result.X -= (int)(centerX * (ratio - 1));
+            result.Y -= (int)(centerY * (ratio - 1));
+            result.Width = (int)(toExtend.Width * ratio);
+            result.Height = (int)(toExtend.Height * ratio);
+            return result;
+        }
+
         public static Vector2 ClampVector(Vector2 toClamp, Vector2 min, Vector2 max)
         {
             float xMin = Math.Min(min.X, max.X);
