@@ -12,7 +12,7 @@ using PokeSi.Sprites;
 
 namespace PokeSi.Map.Entities
 {
-    public class Person : Entity, IEditable
+    public class Person : Entity, IEditable, IBounded
     {
         public enum Direction
         {
@@ -30,17 +30,23 @@ namespace PokeSi.Map.Entities
         public Direction CurrentDirection { get; protected set; }
         public Rectangle Bound { get { return DestinationRect; } }
 
-        public Person(World world, string name, Controller controller = null)
+        public Person(World world)
             : base(world)
         {
-            Controller = controller;
+            Controller = Entity.Controllers.Keyboard;
             SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png"); // TODO : Revome with editor
             world.Resources.Add("player.png", SpriteSheet);
             Idle = new Animation[4];
+            for (int i = 0; i < 4; i++)
+                Idle[i] = world.Resources.GetAnimation("base");
             Walking = new Animation[4];
+            for (int i = 0; i < 4; i++)
+                Walking[i] = world.Resources.GetAnimation("base");
             Running = new Animation[4];
+            for (int i = 0; i < 4; i++)
+                Running[i] = world.Resources.GetAnimation("base");
 
-            Name = name;
+            Name = "Unknown";
             AnimationPlayer.PlayAnimation(Idle[(int)Direction.Down]);
             CurrentDirection = Direction.Down;
             SpeedCoefficient = 3;
@@ -92,7 +98,7 @@ namespace PokeSi.Map.Entities
                 Walking[(int)Direction.Left] = World.Resources.GetAnimation("");
 
             XmlElement runningElem = XmlHelper.GetElement("Running", parent);
-                Running = new Animation[4];
+            Running = new Animation[4];
             if (runningElem != null)
             {
                 for (int i = 0; i < 4; i++)

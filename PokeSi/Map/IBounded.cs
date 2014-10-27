@@ -7,9 +7,8 @@ using SharpDX;
 
 namespace PokeSi.Map
 {
-    public interface IEditable
+    public interface IBounded
     {
-        Form GetEditingForm();
-        void SubmitForm(Form form);
+        Rectangle Bound { get; }
     }
 }

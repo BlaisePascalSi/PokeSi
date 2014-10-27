@@ -48,6 +48,14 @@ namespace PokeSi.Map
             font = Screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
         }
 
+        public int GetNextEntityId()
+        {
+            int i = 0;
+            while (Entities.Keys.Contains(i))
+                i++;
+            return i;
+        }
+
         public void Update(GameTime gameTime)
         {
             if (!editor.TimeSwitch.IsDown() || !editorOn)

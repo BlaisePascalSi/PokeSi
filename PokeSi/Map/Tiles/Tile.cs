@@ -20,7 +20,6 @@ namespace PokeSi.Map.Tiles
         private static bool hasLoaded = false;
 
         public World World { get; private set; }
-        public Rectangle Bound { get { throw new NotImplementedException(); } }
 
         public Tile(World world)
         {

@@ -46,6 +46,11 @@ namespace PokeSi.Map.Entities
             }
         };
 
+        public static string[] GetEntityTypes()
+        {
+            return new string[] { "Person" };
+        }
+
         public World World { get; protected set; }
         public Controller Controller { get; protected set; }
         public float X { get; set; }
