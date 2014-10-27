@@ -65,7 +65,7 @@ namespace PokeSi.Screens.Controls
             Sprite s = Sprites[(int)CurrentState];
             spriteBatch.Draw(s.Sheet.Texture, DestinationRect, s.SourceRect, Color.White);
             if (Text != "")
-                spriteBatch.DrawString(font, Text, new Vector2(DestinationRect.X, DestinationRect.Y), Color.White);
+                spriteBatch.DrawString(font, Text, new Vector2(DestinationRect.X + 2, DestinationRect.Y), Color.White);
         }
     }
 }

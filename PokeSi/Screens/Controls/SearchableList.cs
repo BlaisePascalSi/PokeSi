@@ -16,6 +16,20 @@ namespace PokeSi.Screens.Controls
         public string SelectedItem { get; protected set; }
         public List<string> Items { get { return list.Select(x => x.Text).ToList(); } }
 
+        public override Rectangle Bound
+        {
+            get
+            {
+                return base.Bound;
+            }
+            set
+            {
+                base.Bound = value;
+                searchBar.Bound = new Rectangle(0, 0, Bound.Width - Pading * 2, 25);
+                stack.Bound = new Rectangle(0, 30, Bound.Width - Pading * 2, Bound.Height - 30 - Pading * 2);
+            }
+        }
+
         private List<TextBlock> list;
         private TextBox searchBar;
         private Stack stack;
@@ -27,9 +41,9 @@ namespace PokeSi.Screens.Controls
             : base(screen)
         {
             list = new List<TextBlock>();
+            searchBar = new TextBox(Screen, Rectangle.Empty, searchSprite) { Parent = this };
+            stack = new Stack(Screen) { Parent = this };
             Bound = bound;
-            searchBar = new TextBox(Screen, new Rectangle(0, 0, Bound.Width - 10, 25), searchSprite) { Parent = this };
-            stack = new Stack(Screen) { Bound = new Rectangle(0, 30, Bound.Width - 10, Bound.Height - 30), Parent = this };
             SelectedItem = null;
             this.background = background;
             this.font = font;

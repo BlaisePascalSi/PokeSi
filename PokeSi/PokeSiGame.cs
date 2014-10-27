@@ -83,7 +83,8 @@ namespace PokeSi
             Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             screenManager.Resize(Viewport.Width, Viewport.Height);
-            screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
+            //screenManager.CloseAllAndThenOpen(new WorldScreen(screenManager));
+            screenManager.CloseAllAndThenOpen(new EditorScreen(screenManager));
         }
 
         void Window_ClientSizeChanged(object sender, EventArgs e)

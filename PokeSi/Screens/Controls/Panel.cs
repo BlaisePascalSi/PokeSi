@@ -51,6 +51,13 @@ namespace PokeSi.Screens.Controls
             control.Parent = this;
         }
 
+        public void RemoveAllControl()
+        {
+            foreach (Control c in SubControls.Values)
+                c.Parent = null;
+            SubControls = new Dictionary<string, Control>();
+        }
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

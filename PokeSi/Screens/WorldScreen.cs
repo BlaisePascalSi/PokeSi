@@ -58,7 +58,7 @@ namespace PokeSi.Screens
         {
             base.Draw(gameTime, isInForeground, spriteBatch);
 
-            World.Draw(gameTime, spriteBatch);
+            World.Draw(gameTime, spriteBatch, Manager.Game.Viewport);
         }
     }
 }

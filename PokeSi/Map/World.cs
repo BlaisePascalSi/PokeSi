@@ -24,7 +24,7 @@ namespace PokeSi.Map
 
         public float ScalingFactor { get { return Tile.Width / 16f; } } // TODO : Use none hard coded value
 
-        public WorldScreen Screen { get; protected set; }
+        public Screen Screen { get; protected set; } // TODO : Revome with editor
         public Resources Resources { get; protected set; }
 
         private Editor editor;
@@ -34,7 +34,7 @@ namespace PokeSi.Map
         private Tile[,] Tiles;
         public Dictionary<int, Entity> Entities { get; protected set; }
 
-        public World(WorldScreen screen, XmlDocument doc, XmlElement parent)
+        public World(Screen screen, XmlDocument doc, XmlElement parent)
         {
             Screen = screen;
             Tiles = new Tile[Width, Height];
@@ -77,14 +77,17 @@ namespace PokeSi.Map
                 editor.Update(gameTime);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle destRect)
         {
-            for (int y = 0; y < Height; y++)
+            for (int y = 0; y < (int)Math.Ceiling(destRect.Height / (float)Tile.Height); y++)
             {
-                for (int x = 0; x < Width; x++)
+                for (int x = 0; x < (int)Math.Ceiling(destRect.Width / (float)Tile.Width); x++)
                 {
                     Tile tile = Tiles[x, y];
-                    tile.Draw(gameTime, spriteBatch, x, y, tile.GetDestinationRect(x, y));
+                    Rectangle dest = tile.GetDestinationRect(x, y);
+                    dest.X += destRect.X;
+                    dest.Y += destRect.Y;
+                    tile.Draw(gameTime, spriteBatch, x, y, dest);
                 }
             }
 

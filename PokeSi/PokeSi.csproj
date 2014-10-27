@@ -107,12 +107,14 @@
     <Compile Include="Screens\Controls\Panel.cs" />
     <Compile Include="Screens\Controls\SearchableList.cs" />
     <Compile Include="Screens\Controls\Stack.cs" />
+    <Compile Include="Screens\Controls\TabPanels.cs" />
     <Compile Include="Screens\Controls\TextBlock.cs" />
     <Compile Include="Screens\Controls\TextureDrawer.cs" />
     <Compile Include="Screens\Controls\ToggleButton.cs" />
     <Compile Include="Screens\Controls\Button.cs" />
     <Compile Include="Screens\Controls\Control.cs" />
     <Compile Include="Screens\Controls\TextBox.cs" />
+    <Compile Include="Screens\EditorScreen.cs" />
     <Compile Include="Screens\FormScreen.cs" />
     <Compile Include="Screens\ListPresenterScreen.cs" />
     <Compile Include="Screens\MainMenuScreen.cs" />

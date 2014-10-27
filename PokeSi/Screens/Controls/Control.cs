@@ -12,7 +12,7 @@ namespace PokeSi.Screens.Controls
     public class Control
     {
         public Screen Screen { get; protected set; }
-        public Rectangle Bound { get; set; }
+        public virtual Rectangle Bound { get; set; }
         public Control Parent { get; set; }
         public int Pading { get; set; }
         public Vector2 Scroll { get; protected set; }

@@ -34,7 +34,7 @@ namespace PokeSi.Map.Entities
             : base(world)
         {
             Controller = controller;
-            SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png");
+            SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png"); // TODO : Revome with editor
             world.Resources.Add("player.png", SpriteSheet);
             Idle = new Animation[4];
             Walking = new Animation[4];
@@ -55,7 +55,7 @@ namespace PokeSi.Map.Entities
             SpriteSheet = World.Resources.GetSpriteSheet((string)XmlHelper.GetSimpleNodeContent<string>("Sheet", parent, "player.png"));
             if (SpriteSheet == null)
             {
-                SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png");
+                SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png"); // TODO : Revome with editor
                 World.Resources.Add("player.png", SpriteSheet);
             }
 
