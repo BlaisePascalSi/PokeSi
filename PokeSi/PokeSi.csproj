@@ -89,6 +89,7 @@
     <Compile Include="Map\Form.cs" />
     <Compile Include="Map\IBounded.cs" />
     <Compile Include="Map\IEditable.cs" />
+    <Compile Include="Map\IMoveable.cs" />
     <Compile Include="Map\Tiles\AnimatedTile.cs" />
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
     <Compile Include="Map\Editor.cs" />

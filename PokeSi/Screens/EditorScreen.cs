@@ -516,7 +516,10 @@ namespace PokeSi.Screens
         string lastSelectedTile = null;
         bool leftButtonRealsed = true;
         Entity selectedEntity = null;
+        LocatedTile selectedLocatedTile = null;
         Entity entityToPlace = null;
+        IMoveable dragingElement = null;
+        Vector2 dragingStartPos;
         public override void Update(GameTime gameTime, bool isInForeground)
         {
             base.Update(gameTime, isInForeground);
@@ -540,6 +543,22 @@ namespace PokeSi.Screens
             UpdateTileDataControls();
             UpdateEntityDataControls();
 
+            if (!Input.LeftButton.Down)
+                leftButtonRealsed = true;
+            if (Input.LeftButton.Down && leftButtonRealsed)
+            {
+                // Set tile
+                if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel)
+                {
+                    Tile selectedTile = Tile.UnLocatedTile[tileList.SelectedItem];
+                    int x = (Input.X - worldBound.X) / Tile.Width;
+                    int y = (Input.Y - worldBound.Y) / Tile.Height;
+                    if (worldBound.Contains(Input.X, Input.Y) && (lastXTileSet != x || lastYTileSet != y))
+                        World.SetTile(x, y, selectedTile);
+                    lastXTileSet = x;
+                    lastYTileSet = y;
+                }
+            }
             if (Input.LeftButton.Pressed)
             {
                 lastXTileSet = -1;
@@ -556,6 +575,12 @@ namespace PokeSi.Screens
                         entityToPlace.Position = pos;
                         World.Entities.Add(World.GetNextEntityId(), entityToPlace);
                         entityToPlace = null;
+                    }
+                    // Start Drag and Drop
+                    if (selectedEntity != null && selectedEntity is IMoveable && selectedEntity.DestinationRect.Contains(Input.X, Input.Y))
+                    {
+                        dragingElement = (IMoveable)selectedEntity;
+                        dragingStartPos = selectedEntity.Position;
                     }
                     // Select IBounded
                     selectedEntity = null;
@@ -575,22 +600,36 @@ namespace PokeSi.Screens
                             }
                         }
                     }
+                    selectedLocatedTile = null;
+                    Tile tile = World.GetTile(x / Tile.Width, y / Tile.Height);
+                    if (tile is LocatedTile && tile is IBounded)
+                    {
+                        IBounded bounded = (IBounded)tile;
+                        if (bounded.Bound.Contains(x, y))
+                        {
+                            selectedLocatedTile = (LocatedTile)tile;
+                        }
+                    }
                 }
             }
-            if (!Input.LeftButton.Down)
-                leftButtonRealsed = true;
-            if (Input.LeftButton.Down && leftButtonRealsed)
+            if (Input.LeftButton.Released)
             {
-                // Set tile
-                if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel)
+                if (dragingElement != null)
                 {
-                    Tile selectedTile = Tile.UnLocatedTile[tileList.SelectedItem];
-                    int x = (Input.X - worldBound.X) / Tile.Width;
-                    int y = (Input.Y - worldBound.Y) / Tile.Height;
-                    if (worldBound.Contains(Input.X, Input.Y) && (lastXTileSet != x || lastYTileSet != y))
-                        World.SetTile(x, y, selectedTile);
-                    lastXTileSet = x;
-                    lastYTileSet = y;
+                    if (worldBound.Contains(Input.X, Input.Y))
+                    {
+                        dragingElement.X = Input.X - worldBound.X;
+                        dragingElement.Y = Input.Y - worldBound.Y;
+                        if (dragingElement is Entity)
+                            ReconstructEntityDataPanel();
+                        dragingElement = null;
+                    }
+                    else
+                    {
+                        dragingElement.X = dragingStartPos.X;
+                        dragingElement.Y = dragingStartPos.Y;
+                        dragingElement = null;
+                    }
                 }
             }
             if (tileList.SelectedItem != lastSelectedTile)
@@ -643,6 +682,34 @@ namespace PokeSi.Screens
 
             if (selectedEntity != null && selectedEntity is IBounded)
                 DrawHelper.DrawRectangle(spriteBatch, ((IBounded)selectedEntity).Bound, Color.HotPink);
+            if (selectedLocatedTile != null && selectedLocatedTile is IBounded)
+                DrawHelper.DrawRectangle(spriteBatch, ((IBounded)selectedLocatedTile).Bound, Color.LawnGreen);
+
+            // Draw tile to place
+            if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel && worldBound.Contains(Input.X, Input.Y))
+            {
+                Tile selectedTile = Tile.UnLocatedTile[tileList.SelectedItem];
+                int x = (Input.X - worldBound.X) / Tile.Width;
+                int y = (Input.Y - worldBound.Y) / Tile.Height;
+                selectedTile.Draw(gameTime, spriteBatch, x, y, selectedTile.GetDestinationRect(x, y));
+            }
+            // Draw entity in placement
+            if (entityToPlace != null)
+            {
+                entityToPlace.X = Input.X - worldBound.X;
+                entityToPlace.Y = Input.Y - worldBound.Y;
+                entityToPlace.Draw(gameTime, spriteBatch);
+            }
+            // Draw draging element
+            if (dragingElement != null)
+            {
+                if (dragingElement is Entity)
+                {
+                    dragingElement.X = Input.X - worldBound.X;
+                    dragingElement.Y = Input.Y - worldBound.Y;
+                    ((Entity)dragingElement).Draw(gameTime, spriteBatch);
+                }
+            }
         }
     }
 }

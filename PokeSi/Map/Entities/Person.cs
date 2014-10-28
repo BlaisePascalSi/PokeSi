@@ -12,7 +12,7 @@ using PokeSi.Sprites;
 
 namespace PokeSi.Map.Entities
 {
-    public class Person : Entity, IEditable, IBounded
+    public class Person : Entity, IEditable, IBounded, IMoveable
     {
         public enum Direction
         {

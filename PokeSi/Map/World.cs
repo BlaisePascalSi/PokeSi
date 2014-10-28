@@ -27,8 +27,6 @@ namespace PokeSi.Map
         public Screen Screen { get; protected set; } // TODO : Revome with editor
         public Resources Resources { get; protected set; }
 
-        private Editor editor;
-        private bool editorOn;
         private SpriteFont font;
 
         private Tile[,] Tiles;
@@ -41,9 +39,6 @@ namespace PokeSi.Map
             Entities = new Dictionary<int, Entity>();
 
             Load(doc, parent);
-
-            editor = new Editor(this);
-            editorOn = false;
 
             font = Screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
         }
@@ -58,31 +53,22 @@ namespace PokeSi.Map
 
         public void Update(GameTime gameTime)
         {
-            if (!editor.TimeSwitch.IsDown() || !editorOn)
+            for (int y = 0; y < Height; y++)
             {
-                for (int y = 0; y < Height; y++)
+                for (int x = 0; x < Width; x++)
                 {
-                    for (int x = 0; x < Width; x++)
-                    {
-                        if (Tiles[x, y] == null)
-                            Tiles[x, y] = Tile.UnLocatedTile["Grass"];
+                    if (Tiles[x, y] == null)
+                        Tiles[x, y] = Tile.UnLocatedTile["Grass"];
 
-                        Tile tile = Tiles[x, y];
-                        tile.Update(gameTime, x, y);
-                    }
-                }
-
-                foreach (Entity entity in Entities.Values)
-                {
-                    entity.Update(gameTime);
+                    Tile tile = Tiles[x, y];
+                    tile.Update(gameTime, x, y);
                 }
             }
 
-            if (Input.IsKeyPressed(Keys.Tab))
-                editorOn = !editorOn;
-
-            if (editorOn)
-                editor.Update(gameTime);
+            foreach (Entity entity in Entities.Values)
+            {
+                entity.Update(gameTime);
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle destRect)
@@ -103,9 +89,6 @@ namespace PokeSi.Map
             {
                 entity.Draw(gameTime, spriteBatch);
             }
-
-            if (editorOn)
-                editor.Draw(gameTime, spriteBatch);
         }
 
         public Tile GetTile(int x, int y)
@@ -130,9 +113,9 @@ namespace PokeSi.Map
             if (Tiles[x, y] is MultiTileTile)
             {
                 MultiTileTile mTile = (MultiTileTile)Tiles[x, y];
-                for (int i = -mTile.BlockCenter.X + mTile.X; i < mTile.BlockWidth - mTile.BlockCenter.X + mTile.X; i++)
+                for (int i = -mTile.BlockCenter.X + (int)mTile.X; i < mTile.BlockWidth - mTile.BlockCenter.X + mTile.X; i++)
                 {
-                    for (int j = -mTile.BlockCenter.Y + mTile.Y; j < mTile.BlockHeight - mTile.BlockCenter.Y + mTile.Y; j++)
+                    for (int j = -mTile.BlockCenter.Y + (int)mTile.Y; j < mTile.BlockHeight - mTile.BlockCenter.Y + mTile.Y; j++)
                     {
                         if (i < 0 || i >= Width)
                             continue;

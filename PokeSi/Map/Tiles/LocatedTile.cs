@@ -10,11 +10,14 @@ using SharpDX.Toolkit.Graphics;
 
 namespace PokeSi.Map.Tiles
 {
-    public class LocatedTile : Tile
+    public class LocatedTile : Tile, IBounded, IMoveable
     {
-        public int X { get; protected set; }
-        public int Y { get; protected set; }
-        public Vector2 Position { get { return new Vector2(X, Y); } }
+        protected int x;
+        protected int y;
+        public float X { get { return x; } set { x = (int)value; } }
+        public float Y { get { return y; } set { y = (int)value; } }
+        public Vector2 Position { get { return new Vector2(X, Y); } set { X = value.X; Y = value.Y; } }
+        public Rectangle Bound { get { return GetDestinationRect(x, y); } }
 
         public LocatedTile(World world, int x, int y)
             : base(world)
