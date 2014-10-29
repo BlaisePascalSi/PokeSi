@@ -31,7 +31,7 @@ namespace PokeSi
         // Resources for drawing
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-        private BlendState blendState;
+        public BlendState BlendState { get; protected set; }
 
         // Setup constantes
         private const int PreferredWidth = 800;
@@ -76,7 +76,7 @@ namespace PokeSi
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            blendState = BlendState.New(GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
+            BlendState = BlendState.New(GraphicsDevice, BlendOption.SourceAlpha, BlendOption.InverseSourceAlpha, BlendOperation.Add, BlendOption.One, BlendOption.InverseSourceAlpha, BlendOperation.Add);
 
             DrawHelper.Load(this);
 
@@ -125,7 +125,7 @@ namespace PokeSi
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin(SpriteSortMode.Deferred, blendState, GraphicsDevice.SamplerStates.PointWrap); // Start drawing operation
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState, GraphicsDevice.SamplerStates.PointWrap); // Start drawing operation
 
             screenManager.Draw(gameTime, spriteBatch);
 

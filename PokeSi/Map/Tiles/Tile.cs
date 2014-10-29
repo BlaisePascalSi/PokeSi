@@ -114,6 +114,11 @@ namespace PokeSi.Map.Tiles
             return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
         }
 
+        public virtual float GetDepth(int x,int y)
+        {
+            return y / (float)World.Height / 2 + 0.25f; // Between 0.25 and 0.75
+        }
+
         public virtual Form GetEditingForm()
         {
             return new Form();

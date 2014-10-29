@@ -27,7 +27,7 @@ namespace PokeSi.Map.Tiles
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle destinationRect)
         {
-            spriteBatch.Draw(Sprite.Sheet.Texture, destinationRect, Sprite.SourceRect, Color.White);
+            spriteBatch.Draw(Sprite.Sheet.Texture, destinationRect, Sprite.SourceRect, Color.White, 0, Vector2.Zero, SpriteEffects.None, GetDepth(x, y));
         }
 
         public override Rectangle GetDestinationRect(int x, int y)

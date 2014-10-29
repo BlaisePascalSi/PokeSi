@@ -26,6 +26,10 @@ namespace PokeSi.Map
 
         public Screen Screen { get; protected set; } // TODO : Revome with editor
         public Resources Resources { get; protected set; }
+        public RenderTarget2D RenderTarget { get; protected set; }
+        private bool renderDone;
+        private GraphicsDevice gDevice;
+        private SpriteBatch spriteBatch;
 
         private SpriteFont font;
 
@@ -37,6 +41,10 @@ namespace PokeSi.Map
             Screen = screen;
             Tiles = new Tile[Width, Height];
             Entities = new Dictionary<int, Entity>();
+
+            gDevice = Screen.Manager.Game.GraphicsDevice;
+            spriteBatch = new SpriteBatch(gDevice);
+            renderDone = false;
 
             Load(doc, parent);
 
@@ -71,16 +79,26 @@ namespace PokeSi.Map
             }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle destRect)
+        public void ComputeDraw(GameTime gameTime, Rectangle view)
         {
-            for (int y = 0; y < (int)Math.Ceiling(destRect.Height / (float)Tile.Height); y++)
+            if (RenderTarget == null || view.Width != RenderTarget.Width || view.Height != RenderTarget.Height)
             {
-                for (int x = 0; x < (int)Math.Ceiling(destRect.Width / (float)Tile.Width); x++)
+                if (RenderTarget != null)
+                    RenderTarget.Dispose();
+                RenderTarget = RenderTarget2D.New(gDevice, view.Width, view.Height, gDevice.Presenter.BackBuffer.Format);
+            }
+
+            gDevice.SetRenderTargets(RenderTarget);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, Screen.Manager.Game.BlendState, gDevice.SamplerStates.PointWrap);
+
+            for (int y = 0; y < (int)Math.Ceiling(view.Height / (float)Tile.Height); y++)
+            {
+                for (int x = 0; x < (int)Math.Ceiling(view.Width / (float)Tile.Width); x++)
                 {
                     Tile tile = Tiles[x, y];
                     Rectangle dest = tile.GetDestinationRect(x, y);
-                    dest.X += destRect.X;
-                    dest.Y += destRect.Y;
+                    //dest.X += view.X;
+                    //dest.Y += view.Y;
                     tile.Draw(gameTime, spriteBatch, x, y, dest);
                 }
             }
@@ -89,6 +107,19 @@ namespace PokeSi.Map
             {
                 entity.Draw(gameTime, spriteBatch);
             }
+
+            spriteBatch.End();
+            gDevice.SetRenderTargets(gDevice.BackBuffer);
+            renderDone = true;
+        }
+
+        public void Draw(GameTime gameTime, SpriteBatch sBatch, Rectangle destRect)
+        {
+            if (!renderDone)
+                ComputeDraw(gameTime, new Rectangle(0, 0, destRect.Width, destRect.Height));
+            sBatch.Draw(RenderTarget, destRect, Color.White);
+
+            renderDone = false;
         }
 
         public Tile GetTile(int x, int y)

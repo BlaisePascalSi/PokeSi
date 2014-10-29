@@ -24,10 +24,7 @@ namespace PokeSi.Map.Tiles
 
         public override void Update(GameTime gameTime, int x, int y)
         {
-            /*base.Update(gameTime, x, y);
-            if (x != X || y != Y)
-                throw new ArgumentException("Wrong coordinate");
-            Update(gameTime);*/
+
         }
         public override void Update(GameTime gameTime)
         {
@@ -36,7 +33,6 @@ namespace PokeSi.Map.Tiles
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
         {
-            //base.Draw(gameTime, spriteBatch, x, y, destinationRect);
             if (x != X || y != Y)
                 return;
             Draw(gameTime, spriteBatch, destinationRect);

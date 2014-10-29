@@ -68,6 +68,7 @@ namespace PokeSi.Map.Entities
         }
         protected float SpeedCoefficient = 1;
         public float Speed { get { return SpeedCoefficient * Tile.Width * World.ScalingFactor; } }
+        public virtual float Depth { get { return Y / World.Height / Tile.Height / 2 + 0.25f; } }
 
         public AnimationPlayer AnimationPlayer { get; protected set; }
         public Vector2 Origin
@@ -77,7 +78,7 @@ namespace PokeSi.Map.Entities
 
         public Rectangle DestinationRect
         {
-            get { return new Rectangle((int)(X - Origin.X), (int)(Y - Origin.Y), (int)(AnimationPlayer.CurrentSprite.Width * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Height * World.ScalingFactor)); }
+            get { return new Rectangle((int)(X - Origin.X * World.ScalingFactor), (int)(Y - Origin.Y * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Width * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Height * World.ScalingFactor)); }
         }
 
         public Entity(World world)
@@ -94,7 +95,7 @@ namespace PokeSi.Map.Entities
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            AnimationPlayer.Draw(gameTime, spriteBatch, DestinationRect, Color.White, 0.6f, AnimationPlayer.Animation.SpriteEffect);
+            AnimationPlayer.Draw(gameTime, spriteBatch, DestinationRect, Color.White, Depth, AnimationPlayer.Animation.SpriteEffect);
         }
 
         public virtual void Save(XmlDocument doc, XmlElement parent)
