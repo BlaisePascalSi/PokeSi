@@ -18,8 +18,11 @@ namespace PokeSi.Map.Tiles
 
         public static Dictionary<string, Tile> UnLocatedTile;
         private static bool hasLoaded = false;
+        protected float depthModifier = 0;
 
         public World World { get; private set; }
+
+        public Sprite GroundSprite { get; set; }
 
         public Tile(World world)
         {
@@ -44,6 +47,8 @@ namespace PokeSi.Map.Tiles
                     if (tile != null)
                     {
                         tile.Load(doc, tileElem, world);
+                        tile.GroundSprite = world.Resources.GetSprite((string)XmlHelper.GetSimpleNodeContent<string>("Ground", tileElem, "base"));
+                        tile.depthModifier = (float)XmlHelper.GetSimpleNodeContent<float>("Depth", tileElem, 0.0f);
                         Tile.UnLocatedTile.Add(tileElem.Name, tile);
                     }
                 }
@@ -63,6 +68,8 @@ namespace PokeSi.Map.Tiles
             {
                 XmlElement tileElem = doc.CreateElement(pair.Key);
                 tileElem.AppendChild(XmlHelper.CreateSimpleNode("Type", GetTileType(pair.Value), doc));
+                tileElem.AppendChild(XmlHelper.CreateSimpleNode("Ground", world.Resources.GetName(pair.Value.GroundSprite), doc));
+                tileElem.AppendChild(XmlHelper.CreateSimpleNode("Depth", pair.Value.depthModifier, doc));
                 pair.Value.Save(doc, tileElem, world);
                 mainElem.AppendChild(tileElem);
             }
@@ -97,7 +104,7 @@ namespace PokeSi.Map.Tiles
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
         {
-
+            spriteBatch.Draw(GroundSprite.Sheet.Texture, new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height), GroundSprite.SourceRect, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
         }
 
         public virtual void Load(XmlDocument doc, XmlElement parent, World world)
@@ -114,19 +121,23 @@ namespace PokeSi.Map.Tiles
             return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
         }
 
-        public virtual float GetDepth(int x,int y)
+        public virtual float GetDepth(int x, int y)
         {
-            return y / (float)World.Height / 2 + 0.25f; // Between 0.25 and 0.75
+            return (y + depthModifier) / World.Height / 2 + 0.25f;
         }
 
         public virtual Form GetEditingForm()
         {
-            return new Form();
+            Form form = new Form();
+            form.Datas.Add("Ground", GroundSprite);
+            form.Datas.Add("Depth", depthModifier);
+            return form;
         }
 
         public virtual void SubmitForm(Form form)
         {
-
+            GroundSprite = (Sprite)form.Datas["Ground"];
+            depthModifier = (float)form.Datas["Depth"];
         }
     }
 }

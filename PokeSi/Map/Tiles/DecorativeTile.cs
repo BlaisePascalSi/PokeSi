@@ -36,6 +36,7 @@ namespace PokeSi.Map.Tiles
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
         {
+            base.Draw(gameTime, spriteBatch, x, y, destinationRect);
             spriteBatch.Draw(Sprite.Sheet.Texture, destinationRect, Sprite.SourceRect, Color.White, 0, Vector2.Zero, SpriteEffects.None, GetDepth(x, y));
         }
 

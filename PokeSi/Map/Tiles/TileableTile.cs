@@ -47,6 +47,8 @@ namespace PokeSi.Map.Tiles
 
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
         {
+            base.Draw(gameTime, spriteBatch, x, y, destinationRect);
+
             byte pos = 0;
             if (World.GetTile(x, y + 1) == this) // D
                 pos |= 1;
@@ -57,7 +59,7 @@ namespace PokeSi.Map.Tiles
             if (World.GetTile(x - 1, y) == this) // L
                 pos |= 8;
             if (pos >= 0 && pos < 16 && Sprites[pos] != null)
-                spriteBatch.Draw(Sprites[pos].Sheet.Texture, destinationRect, Sprites[pos].SourceRect, Color.White);
+                spriteBatch.Draw(Sprites[pos].Sheet.Texture, destinationRect, Sprites[pos].SourceRect, Color.White, 0f, Vector2.Zero, SpriteEffects.None, GetDepth(x, y));
         }
 
         public override Form GetEditingForm()
