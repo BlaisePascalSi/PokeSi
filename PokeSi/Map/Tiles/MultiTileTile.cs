@@ -12,14 +12,18 @@ namespace PokeSi.Map.Tiles
 {
     public class MultiTileTile : LocatedTile
     {
-        public int BlockWidth { get; protected set; }
-        public int BlockHeight { get; protected set; }
-        public Point BlockCenter { get; protected set; }
+        private int blockWidth;
+        public int BlockWidth { get { return blockWidth; } protected set { if (blockWidth != value) { blockWidth = value; World.SetTile((int)X, (int)Y, this); } } }
+        private int blockHeight;
+        public int BlockHeight { get { return blockHeight; } protected set { if (blockHeight != value) { blockHeight = value; World.SetTile((int)X, (int)Y, this); } } }
+        public Point blockCenter;
+        public Point BlockCenter { get { return blockCenter; } protected set { if (blockCenter != value) { blockCenter = value; World.SetTile((int)X, (int)Y, this); } } }
 
         public MultiTileTile(World world, int x, int y)
             : base(world, x, y)
         {
-
+            blockWidth = 1;
+            blockHeight = 1;
         }
 
         public override void Update(GameTime gameTime, int x, int y)
@@ -49,9 +53,9 @@ namespace PokeSi.Map.Tiles
 
         public override void Load(XmlDocument doc, XmlElement parent, World world)
         {
-            BlockWidth = (int)XmlHelper.GetSimpleNodeContent<int>("BlockWidth", parent, 1);
-            BlockHeight = (int)XmlHelper.GetSimpleNodeContent<int>("BlockHeight", parent, 1);
-            BlockCenter = XmlHelper.GetPoint("BlockCenter", parent);
+            blockWidth = (int)XmlHelper.GetSimpleNodeContent<int>("BlockWidth", parent, 1);
+            blockHeight = (int)XmlHelper.GetSimpleNodeContent<int>("BlockHeight", parent, 1);
+            blockCenter = XmlHelper.GetPoint("BlockCenter", parent);
         }
         public override void Save(XmlDocument doc, XmlElement parent, World world)
         {

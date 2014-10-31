@@ -82,7 +82,11 @@ namespace PokeSi.Map.Tiles
         }
         public static string[] GetTileTypes()
         {
-            return new string[] { "DecorativeTile", "AnimatedTile", "TileableTile", "HouseTile" };
+            return new string[] { "DecorativeTile", "AnimatedTile", "TileableTile" }; // Only the unlocated one
+        }
+        public static string[] GetLocTileTypes()
+        {
+            return new string[] { "HouseTile" };
         }
         public static Tile GetTile(string type, World world)
         {

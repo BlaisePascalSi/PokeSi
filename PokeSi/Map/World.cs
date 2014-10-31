@@ -134,7 +134,7 @@ namespace PokeSi.Map
         public void SetTile(int x, int y, Tile tile)
         {
             if (tile == null)
-                return;
+                tile = Tile.UnLocatedTile["Grass"];
             if (x < 0 || x >= Width)
                 return;
             if (y < 0 || y >= Height)

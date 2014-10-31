@@ -30,6 +30,7 @@ namespace PokeSi.Screens
         private Form tileDataForm;
         private Panel tileDataPanel;
         private Button tileDataSubmitButton;
+
         private Panel entityPanel;
         private ListButton entityListButton;
         private Button entityAddButton;
@@ -37,6 +38,14 @@ namespace PokeSi.Screens
         private Panel entityDataPanel;
         private Button entityDataSubmitButton;
         private Button entityRemoveButton;
+
+        private Panel locTilePanel;
+        private ListButton locTileListButton;
+        private Button locTileAddButton;
+        private Form locTileDataForm;
+        private Panel locTileDataPanel;
+        private Button locTileDataSubmitButton;
+        private Button locTileRemoveButton;
 
         public EditorScreen(ScreenManager manager)
             : base(manager)
@@ -82,6 +91,17 @@ namespace PokeSi.Screens
             entityPanel.AddControl("entityDataPanel", entityDataPanel);
             tabPanel.AddPanel("Entity", entityPanel, 52);
 
+            locTilePanel = new Panel(this, Rectangle.Empty, buttonSprite) { Pading = 5 };
+            TextBlock locTileListButtonLabel = new TextBlock(this, Vector2.Zero, "Type");
+            locTilePanel.AddControl("locTileListButtonLabel", locTileListButtonLabel);
+            locTileListButton = new ListButton(this, new Rectangle(50, 0, 100, 25), buttonSprite, new List<string>(Tile.GetLocTileTypes()));
+            locTilePanel.AddControl("locTileListButton", locTileListButton);
+            locTileAddButton = new Button(this, new Rectangle(5, 30, 40, 25), buttonSpriteTab) { Text = "Add" };
+            locTilePanel.AddControl("locTileAddButton", locTileAddButton);
+            locTileDataPanel = new Panel(this, Rectangle.Empty, null);
+            locTilePanel.AddControl("locTileDataPanel", locTileDataPanel);
+            tabPanel.AddPanel("LocTile", locTilePanel, 65);
+
             Resize(Manager.Game.Viewport.Width, Manager.Game.Viewport.Height);
             UpdateDatas();
         }
@@ -113,6 +133,8 @@ namespace PokeSi.Screens
             tileDataPanel.Bound = new Rectangle(tileAddButton.Bound.Left, tileAddButton.Bound.Bottom, tilePanel.Bound.Width - tilePanel.Pading * 2, tilePanel.Bound.Height - tilePanel.Pading * 2 - tileAddButton.Bound.Bottom);
 
             entityDataPanel.Bound = new Rectangle(0, 0, entityPanel.Bound.Width - entityPanel.Pading * 2, entityPanel.Bound.Height - entityPanel.Pading * 2);
+
+            locTileDataPanel.Bound = new Rectangle(0, 0, locTilePanel.Bound.Width - locTilePanel.Pading * 2, locTilePanel.Bound.Height - locTilePanel.Pading * 2);
         }
 
         private void UpdateDatas()
@@ -510,14 +532,211 @@ namespace PokeSi.Screens
 
         #endregion
 
+        #region LocTile Data Edition
+
+        private void ReconstructLocTileDataPanel()
+        {
+            locTileDataSubmitButton = null;
+            locTileRemoveButton = null;
+            locTileDataPanel.RemoveAllControl();
+            if (selectedLocTile != null && selectedLocTile is IEditable)
+            {
+                IEditable ent = (IEditable)selectedLocTile;
+                locTileDataForm = ent.GetEditingForm();
+
+                Sprite buttonSprite = World.Resources.GetSprite("button_idle");
+                Sprite[] buttonSpriteTab = new Sprite[] { buttonSprite, World.Resources.GetSprite("button_over"), World.Resources.GetSprite("button_pressed") };
+
+                Rectangle nextRectangle = new Rectangle(120, locTileAddButton.Bound.Bottom + 5, locTileDataPanel.Bound.Width - 120 - 5, 25);
+                foreach (KeyValuePair<string, object> pair in locTileDataForm.Datas)
+                {
+                    locTileDataPanel.AddControl(pair.Key + "T", new TextBlock(this, new Vector2(0, nextRectangle.Y), pair.Key));
+                    if (pair.Value is string || pair.Value is int || pair.Value is float)
+                    {
+                        locTileDataPanel.AddControl(pair.Key, new TextBox(this, nextRectangle, buttonSpriteTab));
+                        ((TextBox)locTileDataPanel.SubControls[pair.Key]).Text = pair.Value.ToString();
+                    }
+                    else if (pair.Value is bool)
+                    {
+                        locTileDataPanel.AddControl(pair.Key, new ToggleButton(this, nextRectangle, buttonSpriteTab));
+                        ((ToggleButton)locTileDataPanel.SubControls[pair.Key]).SetState((bool)pair.Value);
+                    }
+                    else if (pair.Value is Point)
+                    {
+                        Rectangle rect = nextRectangle;
+                        rect.Width = nextRectangle.Width / 2 - 5;
+                        locTileDataPanel.AddControl(pair.Key, new TextBox(this, rect, buttonSpriteTab));
+                        ((TextBox)locTileDataPanel.SubControls[pair.Key]).Text = ((Point)(pair.Value)).X.ToString();
+                        rect.X += rect.Width + 10;
+                        locTileDataPanel.AddControl(pair.Key + "_Y", new TextBox(this, rect, buttonSpriteTab));
+                        ((TextBox)locTileDataPanel.SubControls[pair.Key + "_Y"]).Text = ((Point)(pair.Value)).Y.ToString();
+                    }
+                    else if (pair.Value is Enum)
+                    {
+                        Type enumType = pair.Value.GetType();
+                        ListButton control = new ListButton(this, nextRectangle, buttonSprite, new List<string>(Enum.GetNames(enumType)));
+                        control.SelectValue(Enum.GetName(enumType, pair.Value));
+                        locTileDataPanel.AddControl(pair.Key, control);
+                    }
+                    else if (pair.Value is Controller)
+                    {
+                        ListButton control = new ListButton(this, nextRectangle, buttonSprite, new List<string>(Entity.Controllers.GetAll()));
+                        control.SelectValue(Entity.Controllers.GetName((Controller)pair.Value));
+                        locTileDataPanel.AddControl(pair.Key, control);
+                    }
+                    else if (pair.Value is Sprite)
+                    {
+                        Rectangle rect = nextRectangle;
+                        rect.Right -= 30;
+                        ListButton control = new ListButton(this, rect, buttonSprite, new List<string>(World.Resources.Sprites.Keys));
+                        control.SelectValue(World.Resources.GetName((Sprite)pair.Value));
+                        locTileDataPanel.AddControl(pair.Key, control);
+                        rect.Left = rect.Right;
+                        rect.Right += 30;
+                        rect.Left += 10;
+                        Button button = new Button(this, rect, buttonSpriteTab);
+                        button.Text = "...";
+                        locTileDataPanel.AddControl("addSprite_" + pair.Key, button);
+                    }
+                    else if (pair.Value is Animation)
+                    {
+                        Rectangle rect = nextRectangle;
+                        rect.Right -= 30;
+                        ListButton control = new ListButton(this, rect, buttonSprite, new List<string>(World.Resources.Animations.Keys));
+                        control.SelectValue(World.Resources.GetName((Animation)pair.Value));
+                        locTileDataPanel.AddControl(pair.Key, control);
+                        rect.Left = rect.Right;
+                        rect.Right += 30;
+                        rect.Left += 10;
+                        Button button = new Button(this, rect, buttonSpriteTab);
+                        button.Text = "...";
+                        locTileDataPanel.AddControl("addAnimation_" + pair.Key, button);
+                    }
+                    nextRectangle.Y += 30;
+                }
+                nextRectangle.Width = 65;
+                locTileDataSubmitButton = new Button(this, nextRectangle, buttonSpriteTab);
+                locTileDataSubmitButton.Text = "Submit";
+                locTileDataPanel.AddControl("submitButton", locTileDataSubmitButton);
+                nextRectangle.X = 0;
+                nextRectangle.Width = 75;
+                locTileRemoveButton = new Button(this, nextRectangle, buttonSpriteTab) { Text = "Remove" };
+                locTileDataPanel.AddControl("locTileRemoveButton", locTileRemoveButton);
+            }
+        }
+        private void SubmitLocTileData()
+        {
+            foreach (KeyValuePair<string, Control> pair in locTileDataPanel.SubControls)
+            {
+                if (locTileDataForm.Datas.ContainsKey(pair.Key))
+                {
+                    if (locTileDataForm.Datas[pair.Key] is string)
+                        locTileDataForm.Datas[pair.Key] = ((TextBox)pair.Value).Text;
+                    else if (locTileDataForm.Datas[pair.Key] is int)
+                        locTileDataForm.Datas[pair.Key] = int.Parse(((TextBox)pair.Value).Text);
+                    else if (locTileDataForm.Datas[pair.Key] is float)
+                        locTileDataForm.Datas[pair.Key] = float.Parse(((TextBox)pair.Value).Text);
+                    else if (locTileDataForm.Datas[pair.Key] is Point)
+                    {
+                        Point point = new Point();
+                        point.X = int.Parse(((TextBox)pair.Value).Text);
+                        point.Y = int.Parse(((TextBox)locTileDataPanel.SubControls[pair.Key + "_Y"]).Text);
+                        locTileDataForm.Datas[pair.Key] = point;
+                    }
+                    else if (locTileDataForm.Datas[pair.Key] is Enum)
+                    {
+                        Type enumType = locTileDataForm.Datas[pair.Key].GetType();
+                        ListButton control = (ListButton)pair.Value;
+                        locTileDataForm.Datas[pair.Key] = Enum.Parse(enumType, control.List[control.CurrentIndex]);
+                    }
+                    else if (locTileDataForm.Datas[pair.Key] is Controller)
+                    {
+                        ListButton control = (ListButton)pair.Value;
+                        locTileDataForm.Datas[pair.Key] = Entity.Controllers.Get(control.List[control.CurrentIndex]);
+                    }
+                    else if (locTileDataForm.Datas[pair.Key] is Sprite)
+                    {
+                        ListButton control = (ListButton)pair.Value;
+                        locTileDataForm.Datas[pair.Key] = World.Resources.GetSprite(control.List[control.CurrentIndex]);
+                    }
+                    else if (locTileDataForm.Datas[pair.Key] is Animation)
+                    {
+                        ListButton control = (ListButton)pair.Value;
+                        locTileDataForm.Datas[pair.Key] = World.Resources.GetAnimation(control.List[control.CurrentIndex]);
+                    }
+                }
+            }
+
+            if (selectedLocTile != null && selectedLocTile is IEditable)
+            {
+                IEditable locTile = (IEditable)selectedLocTile;
+                locTile.SubmitForm(locTileDataForm);
+            }
+        }
+        ListPresenterScreen<Animation> lastLocTileDataOpenAnimationScreen = null;
+        ListPresenterScreen<Sprite> lastLocTileDataOpenSpriteScreen = null;
+        string lastLocTileDataButtonKey = null;
+        private void UpdateLocTileDataControls()
+        {
+            foreach (KeyValuePair<string, Control> pair in locTileDataPanel.SubControls)
+            {
+                if (pair.Key.StartsWith("addAnimation_"))
+                {
+                    Button button = (Button)pair.Value;
+                    if (button.IsPressed())
+                    {
+                        lastLocTileDataOpenAnimationScreen = new ListPresenterScreen<Animation>(Manager, World.Resources, delegate() { return World.Resources.Animations; });
+                        Manager.OpenScreen(lastLocTileDataOpenAnimationScreen);
+                        lastLocTileDataButtonKey = pair.Key;
+                        return;
+                    }
+                }
+                if (pair.Key.StartsWith("addSprite_"))
+                {
+                    Button button = (Button)pair.Value;
+                    if (button.IsPressed())
+                    {
+                        lastLocTileDataOpenSpriteScreen = new ListPresenterScreen<Sprite>(Manager, World.Resources, delegate() { return World.Resources.Sprites; });
+                        Manager.OpenScreen(lastLocTileDataOpenSpriteScreen);
+                        lastLocTileDataButtonKey = pair.Key;
+                        return;
+                    }
+                }
+            }
+
+            if (lastLocTileDataOpenAnimationScreen != null && lastLocTileDataOpenAnimationScreen.IsSubmitted && lastLocTileDataButtonKey != null)
+            {
+                if (lastLocTileDataOpenAnimationScreen.SelectedItem != null)
+                {
+                    ListButton listButton = (ListButton)locTileDataPanel.SubControls[lastLocTileDataButtonKey.Split('_').Last()];
+                    listButton.SelectValue(lastLocTileDataOpenAnimationScreen.SelectedItem);
+                }
+                lastLocTileDataOpenAnimationScreen = null;
+                lastLocTileDataButtonKey = null;
+            }
+            if (lastLocTileDataOpenSpriteScreen != null && lastLocTileDataOpenSpriteScreen.IsSubmitted && lastLocTileDataButtonKey != null)
+            {
+                if (lastLocTileDataOpenSpriteScreen.SelectedItem != null)
+                {
+                    ListButton listButton = (ListButton)locTileDataPanel.SubControls[lastLocTileDataButtonKey.Split('_').Last()];
+                    listButton.SelectValue(lastLocTileDataOpenSpriteScreen.SelectedItem);
+                }
+                lastLocTileDataOpenSpriteScreen = null;
+                lastLocTileDataButtonKey = null;
+            }
+        }
+
+        #endregion
+
         int lastXTileSet = -1;
         int lastYTileSet = -1;
         Screen lastScreenOpen = null;
         string lastSelectedTile = null;
         bool leftButtonRealsed = true;
         Entity selectedEntity = null;
-        LocatedTile selectedLocatedTile = null;
         Entity entityToPlace = null;
+        LocatedTile selectedLocTile = null;
+        LocatedTile locTileToPlace = null;
         IMoveable dragingElement = null;
         Vector2 dragingStartPos;
         public override void Update(GameTime gameTime, bool isInForeground)
@@ -542,6 +761,7 @@ namespace PokeSi.Screens
             tabPanel.Update(gameTime);
             UpdateTileDataControls();
             UpdateEntityDataControls();
+            UpdateLocTileDataControls();
 
             if (!Input.LeftButton.Down)
                 leftButtonRealsed = true;
@@ -576,15 +796,29 @@ namespace PokeSi.Screens
                         World.Entities.Add(World.GetNextEntityId(), entityToPlace);
                         entityToPlace = null;
                     }
+                    // Place LocTile
+                    if (locTileToPlace != null)
+                    {
+                        Vector2 pos = Vector2.Zero;
+                        pos.X = (Input.X - worldBound.X) / Tile.Width;
+                        pos.Y = (Input.Y - worldBound.Y) / Tile.Height;
+                        World.SetTile((int)pos.X, (int)pos.Y, locTileToPlace);
+                        locTileToPlace = null;
+                    }
                     // Start Drag and Drop
                     if (selectedEntity != null && selectedEntity is IMoveable && selectedEntity.DestinationRect.Contains(Input.X, Input.Y))
                     {
                         dragingElement = (IMoveable)selectedEntity;
                         dragingStartPos = selectedEntity.Position;
                     }
+                    else if (selectedLocTile != null && selectedLocTile is IMoveable && selectedLocTile.GetDestinationRect((int)selectedLocTile.X, (int)selectedLocTile.Y).Contains(Input.X, Input.Y))
+                    {
+                        dragingElement = (IMoveable)selectedLocTile;
+                        dragingStartPos = selectedLocTile.Position;
+                        World.SetTile((int)selectedLocTile.X, (int)selectedLocTile.Y, null);
+                    }
                     // Select IBounded
-                    selectedEntity = null;
-                    ReconstructEntityDataPanel();
+                    bool foundOne = false;
                     int x = Input.X - worldBound.X;
                     int y = Input.Y - worldBound.Y;
                     foreach (Entity ent in World.Entities.Values)
@@ -596,19 +830,32 @@ namespace PokeSi.Screens
                             {
                                 selectedEntity = ent;
                                 ReconstructEntityDataPanel();
+                                foundOne = true;
                                 break;
                             }
                         }
                     }
-                    selectedLocatedTile = null;
+                    if(!foundOne)
+                    {
+                        selectedEntity = null;
+                        ReconstructEntityDataPanel();
+                    }
+                    foundOne = false;
                     Tile tile = World.GetTile(x / Tile.Width, y / Tile.Height);
                     if (tile is LocatedTile && tile is IBounded)
                     {
                         IBounded bounded = (IBounded)tile;
                         if (bounded.Bound.Contains(x, y))
                         {
-                            selectedLocatedTile = (LocatedTile)tile;
+                            selectedLocTile = (LocatedTile)tile;
+                            ReconstructLocTileDataPanel();
+                            foundOne = true;
                         }
+                    }
+                    if(!foundOne && selectedLocTile != dragingElement)
+                    {
+                        selectedLocTile = null;
+                        ReconstructLocTileDataPanel();
                     }
                 }
             }
@@ -618,10 +865,18 @@ namespace PokeSi.Screens
                 {
                     if (worldBound.Contains(Input.X, Input.Y))
                     {
-                        dragingElement.X = Input.X - worldBound.X;
-                        dragingElement.Y = Input.Y - worldBound.Y;
                         if (dragingElement is Entity)
+                        {
+                            dragingElement.X = Input.X - worldBound.X;
+                            dragingElement.Y = Input.Y - worldBound.Y;
                             ReconstructEntityDataPanel();
+                        }
+                        if (dragingElement is LocatedTile)
+                        {
+                            LocatedTile tile = (LocatedTile)dragingElement;
+                            World.SetTile((Input.X - worldBound.X) / Tile.Width, (Input.Y - worldBound.Y) / Tile.Height, tile);
+                            ReconstructLocTileDataPanel();
+                        }
                         dragingElement = null;
                     }
                     else
@@ -670,6 +925,21 @@ namespace PokeSi.Screens
             }
             if (entityDataSubmitButton != null && entityDataForm != null && entityDataSubmitButton.IsPressed())
                 SubmitEntityData();
+
+            if (locTileAddButton.IsPressed())
+            {
+                Type type = this.GetType().Assembly.GetType(typeof(Tile).Namespace + "." + locTileListButton.List[locTileListButton.CurrentIndex]);
+                if (type != null)
+                    locTileToPlace = (LocatedTile)type.GetConstructor(new Type[] { typeof(World), typeof(int), typeof(int) }).Invoke(new object[] { World, 0, 0 });
+            }
+            if (locTileRemoveButton != null && locTileRemoveButton.IsPressed() && selectedLocTile != null)
+            {
+                World.SetTile((int)selectedLocTile.X, (int)selectedLocTile.Y, null);
+                selectedLocTile = null;
+                ReconstructLocTileDataPanel();
+            }
+            if (locTileDataSubmitButton != null && locTileDataForm != null && locTileDataSubmitButton.IsPressed())
+                SubmitLocTileData();
         }
 
         public override void Draw(GameTime gameTime, bool isInForeground, SpriteBatch spriteBatch)
@@ -682,8 +952,8 @@ namespace PokeSi.Screens
 
             if (selectedEntity != null && selectedEntity is IBounded)
                 DrawHelper.DrawRectangle(spriteBatch, ((IBounded)selectedEntity).Bound, Color.HotPink);
-            if (selectedLocatedTile != null && selectedLocatedTile is IBounded)
-                DrawHelper.DrawRectangle(spriteBatch, ((IBounded)selectedLocatedTile).Bound, Color.LawnGreen);
+            if (selectedLocTile != null && selectedLocTile is IBounded)
+                DrawHelper.DrawRectangle(spriteBatch, ((IBounded)selectedLocTile).Bound, Color.LawnGreen);
 
             // Draw tile to place
             if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel && worldBound.Contains(Input.X, Input.Y))
@@ -708,6 +978,13 @@ namespace PokeSi.Screens
                     dragingElement.X = Input.X - worldBound.X;
                     dragingElement.Y = Input.Y - worldBound.Y;
                     ((Entity)dragingElement).Draw(gameTime, spriteBatch);
+                }
+                if (dragingElement is LocatedTile)
+                {
+                    dragingElement.X = (Input.X - worldBound.X) / Tile.Width;
+                    dragingElement.Y = (Input.Y - worldBound.Y) / Tile.Height;
+                    LocatedTile tile = (LocatedTile)dragingElement;
+                    tile.Draw(gameTime, spriteBatch, tile.GetDestinationRect((int)tile.X, (int)tile.Y));
                 }
             }
         }
