@@ -46,10 +46,10 @@ namespace PokeSi.Map.Tiles
             AnimationPlayer.Draw(gameTime, spriteBatch, destinationRect, Color.White, GetDepth(x, y));
         }
 
-        public override Rectangle GetDestinationRect(int x, int y)
+        public override Rectangle GetDestinationRect(int x, int y, int xOff, int yOff)
         {
-            return DrawHelper.ExtendToContain(new Rectangle(x * Tile.Width - AnimationPlayer.CurrentSprite.Origin.X,
-                                                            y * Tile.Height - AnimationPlayer.CurrentSprite.Origin.Y,
+            return DrawHelper.ExtendToContain(new Rectangle(x * Tile.Width - AnimationPlayer.CurrentSprite.Origin.X - xOff,
+                                                            y * Tile.Height - AnimationPlayer.CurrentSprite.Origin.Y - yOff,
                                                             AnimationPlayer.CurrentSprite.Width,
                                                             AnimationPlayer.CurrentSprite.Height),
                                             new Rectangle(0, 0, Tile.Width, Tile.Height),

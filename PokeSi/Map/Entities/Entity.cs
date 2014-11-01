@@ -78,7 +78,7 @@ namespace PokeSi.Map.Entities
 
         public Rectangle DestinationRect
         {
-            get { return new Rectangle((int)(X - Origin.X * World.ScalingFactor), (int)(Y - Origin.Y * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Width * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Height * World.ScalingFactor)); }
+            get { return new Rectangle((int)(X - Origin.X * World.ScalingFactor) - World.View.X, (int)(Y - Origin.Y * World.ScalingFactor) - World.View.Y, (int)(AnimationPlayer.CurrentSprite.Width * World.ScalingFactor), (int)(AnimationPlayer.CurrentSprite.Height * World.ScalingFactor)); }
         }
 
         public Entity(World world)

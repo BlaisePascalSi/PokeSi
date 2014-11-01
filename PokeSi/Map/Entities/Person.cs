@@ -23,7 +23,6 @@ namespace PokeSi.Map.Entities
         };
 
         public string Name { get; protected set; }
-        public SpriteSheet SpriteSheet;
         private Animation[] Idle;
         private Animation[] Walking;
         private Animation[] Running;
@@ -34,8 +33,6 @@ namespace PokeSi.Map.Entities
             : base(world)
         {
             Controller = Entity.Controllers.Keyboard;
-            SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png"); // TODO : Revome with editor
-            world.Resources.Add("player.png", SpriteSheet);
             Idle = new Animation[4];
             for (int i = 0; i < 4; i++)
                 Idle[i] = world.Resources.GetAnimation("base");
@@ -57,13 +54,6 @@ namespace PokeSi.Map.Entities
             Name = (string)XmlHelper.GetSimpleNodeContent<string>("Name", parent, "Player");
             CurrentDirection = (Direction)Enum.Parse(typeof(Direction), (string)XmlHelper.GetSimpleNodeContent<string>("Direction", parent, "Down"));
             Controller = Entity.Controllers.Get((string)XmlHelper.GetSimpleNodeContent<string>("Controller", parent, ""));
-
-            SpriteSheet = World.Resources.GetSpriteSheet((string)XmlHelper.GetSimpleNodeContent<string>("Sheet", parent, "player.png"));
-            if (SpriteSheet == null)
-            {
-                SpriteSheet = new SpriteSheet(World.Screen.Manager.Game, "Entities/player.png"); // TODO : Revome with editor
-                World.Resources.Add("player.png", SpriteSheet);
-            }
 
             XmlElement idleElem = XmlHelper.GetElement("Idle", parent);
             Idle = new Animation[4];
@@ -147,8 +137,6 @@ namespace PokeSi.Map.Entities
             parent.AppendChild(XmlHelper.CreateSimpleNode("Direction", CurrentDirection, doc));
             if (Controller != null)
                 parent.AppendChild(XmlHelper.CreateSimpleNode("Controller", Controller, doc));
-
-            parent.AppendChild(XmlHelper.CreateSimpleNode("Sheet", World.Resources.GetName(SpriteSheet), doc));
 
             XmlElement idleElem = doc.CreateElement("Idle");
             for (int i = 0; i < 4; i++)

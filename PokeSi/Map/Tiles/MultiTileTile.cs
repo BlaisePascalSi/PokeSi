@@ -46,9 +46,9 @@ namespace PokeSi.Map.Tiles
 
         }
 
-        public override Rectangle GetDestinationRect(int x, int y)
+        public override Rectangle GetDestinationRect(int x, int y, int xOff = 0, int yOff = 0)
         {
-            return new Rectangle(Tile.Width * (-BlockCenter.X + x), Tile.Height * (-BlockCenter.Y + y), Tile.Width * BlockWidth, Tile.Height * BlockHeight);
+            return new Rectangle(Tile.Width * (-BlockCenter.X + x) - xOff, Tile.Height * (-BlockCenter.Y + y) - yOff, Tile.Width * BlockWidth, Tile.Height * BlockHeight);
         }
 
         public override void Load(XmlDocument doc, XmlElement parent, World world)

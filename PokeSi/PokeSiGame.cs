@@ -17,6 +17,9 @@ namespace PokeSi
 {
     public class PokeSiGame : Game
     {
+        private static PokeSiGame instance;
+        public static PokeSiGame Instance { get { return instance; } }
+
         /// <summary>
         /// Give the rectangle corresponding to the Viexport (part of the screen we draw on)
         /// </summary>
@@ -48,6 +51,8 @@ namespace PokeSi
 
         public PokeSiGame()
         {
+            instance = this;
+
             graphics = new GraphicsDeviceManager(this);
 
             graphics.PreferredBackBufferWidth = PreferredWidth;

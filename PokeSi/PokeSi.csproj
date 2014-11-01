@@ -92,7 +92,6 @@
     <Compile Include="Map\IMoveable.cs" />
     <Compile Include="Map\Tiles\AnimatedTile.cs" />
     <Compile Include="Map\Tiles\DecorativeTile.cs" />
-    <Compile Include="Map\Editor.cs" />
     <Compile Include="Map\Tiles\HouseTile.cs" />
     <Compile Include="Map\Tiles\LocatedTile.cs" />
     <Compile Include="Map\Tiles\MultiTileTile.cs" />

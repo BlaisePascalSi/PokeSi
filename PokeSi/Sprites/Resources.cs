@@ -28,7 +28,7 @@ namespace PokeSi.Sprites
 
             XmlElement sheetsElem = (XmlElement)doc.GetElementsByTagName("SpriteSheets").Item(0);
             foreach (XmlElement elem in sheetsElem.ChildNodes)
-                SpriteSheets.Add(elem.Name, new SpriteSheet(doc, elem, world.Screen.Manager.Game));
+                SpriteSheets.Add(elem.Name, new SpriteSheet(doc, elem, PokeSiGame.Instance));
 
             XmlElement spritesElem = (XmlElement)doc.GetElementsByTagName("Sprites").Item(0);
             foreach (XmlElement elem in spritesElem.ChildNodes)

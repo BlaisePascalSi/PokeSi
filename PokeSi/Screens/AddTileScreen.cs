@@ -101,7 +101,6 @@ namespace PokeSi.Screens
                 {
                     currentTile.SubmitForm(currentFormScreen.Form);
                     currentFormScreen = null;
-                    Editor.SetCurrentTile(currentTile);
                     Manager.CloseScreen();
                 }
                 else

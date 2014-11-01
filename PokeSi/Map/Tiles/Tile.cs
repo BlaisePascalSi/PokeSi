@@ -27,6 +27,7 @@ namespace PokeSi.Map.Tiles
         public Tile(World world)
         {
             World = world;
+            GroundSprite = World.Resources.GetSprite("tile_grass");
         }
 
         public static void StaticLoad(XmlDocument doc, XmlElement parent, World world)
@@ -108,7 +109,7 @@ namespace PokeSi.Map.Tiles
 
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, int x, int y, Rectangle destinationRect)
         {
-            spriteBatch.Draw(GroundSprite.Sheet.Texture, new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height), GroundSprite.SourceRect, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
+            spriteBatch.Draw(GroundSprite.Sheet.Texture, new Rectangle(x * Tile.Width - World.View.X, y * Tile.Height - World.View.Y, Tile.Width, Tile.Height), GroundSprite.SourceRect, Color.White, 0, Vector2.Zero, SpriteEffects.None, 0);
         }
 
         public virtual void Load(XmlDocument doc, XmlElement parent, World world)
@@ -120,9 +121,9 @@ namespace PokeSi.Map.Tiles
 
         }
 
-        public virtual Rectangle GetDestinationRect(int x, int y)
+        public virtual Rectangle GetDestinationRect(int x, int y, int xOff = 0, int yOff = 0)
         {
-            return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
+            return new Rectangle(x * Tile.Width - xOff, y * Tile.Height - yOff, Tile.Width, Tile.Height);
         }
 
         public virtual float GetDepth(int x, int y)

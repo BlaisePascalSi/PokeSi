@@ -24,9 +24,10 @@ namespace PokeSi.Map
 
         public float ScalingFactor { get { return Tile.Width / 16f; } } // TODO : Use none hard coded value
 
-        public Screen Screen { get; protected set; } // TODO : Revome with editor
         public Resources Resources { get; protected set; }
         public RenderTarget2D RenderTarget { get; protected set; }
+        private Rectangle view;
+        public Rectangle View { get { return view; } }
         private bool renderDone;
         private GraphicsDevice gDevice;
         private SpriteBatch spriteBatch;
@@ -38,17 +39,18 @@ namespace PokeSi.Map
 
         public World(Screen screen, XmlDocument doc, XmlElement parent)
         {
-            Screen = screen;
             Tiles = new Tile[Width, Height];
             Entities = new Dictionary<int, Entity>();
 
-            gDevice = Screen.Manager.Game.GraphicsDevice;
+            gDevice = PokeSiGame.Instance.GraphicsDevice;
             spriteBatch = new SpriteBatch(gDevice);
             renderDone = false;
 
             Load(doc, parent);
 
-            font = Screen.Manager.Game.Content.Load<SpriteFont>("Fonts/Hud");
+            view = new Rectangle(0, 0, Tile.Width * Width, Tile.Height * Height);
+
+            font = PokeSiGame.Instance.Content.Load<SpriteFont>("Fonts/Hud");
         }
 
         public int GetNextEntityId()
@@ -89,19 +91,26 @@ namespace PokeSi.Map
             }
 
             gDevice.SetRenderTargets(RenderTarget);
-            spriteBatch.Begin(SpriteSortMode.FrontToBack, Screen.Manager.Game.BlendState, gDevice.SamplerStates.PointWrap);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, PokeSiGame.Instance.BlendState, gDevice.SamplerStates.PointWrap);
 
-            for (int y = 0; y < (int)Math.Ceiling(view.Height / (float)Tile.Height); y++)
+            List<MultiTileTile> toDraw = new List<MultiTileTile>();
+            for (int y = view.Y / Tile.Height; y < view.Y / Tile.Height + (int)Math.Ceiling(view.Height / (float)Tile.Height) + 1; y++)
             {
-                for (int x = 0; x < (int)Math.Ceiling(view.Width / (float)Tile.Width); x++)
+                if (y >= Height)
+                    break;
+                for (int x = view.X / Tile.Width; x < view.X / Tile.Width + (int)Math.Ceiling(view.Width / (float)Tile.Width) + 1; x++)
                 {
+                    if (x >= Width)
+                        break;
                     Tile tile = Tiles[x, y];
-                    Rectangle dest = tile.GetDestinationRect(x, y);
-                    //dest.X += view.X;
-                    //dest.Y += view.Y;
-                    tile.Draw(gameTime, spriteBatch, x, y, dest);
+                    if (!(tile is MultiTileTile))
+                        tile.Draw(gameTime, spriteBatch, x, y, tile.GetDestinationRect(x, y, view.X, view.Y));
+                    if (tile is MultiTileTile && !toDraw.Contains((MultiTileTile)tile))
+                        toDraw.Add((MultiTileTile)tile);
                 }
             }
+            foreach (MultiTileTile tile in toDraw)
+                tile.Draw(gameTime, spriteBatch, (int)tile.X, (int)tile.Y, tile.GetDestinationRect((int)tile.X, (int)tile.Y, view.X, view.Y));
 
             foreach (Entity entity in Entities.Values)
             {
@@ -115,11 +124,27 @@ namespace PokeSi.Map
 
         public void Draw(GameTime gameTime, SpriteBatch sBatch, Rectangle destRect)
         {
+            if (view.Width != destRect.Width || view.Height != destRect.Height)
+            {
+                view.Width = destRect.Width;
+                view.Height = destRect.Height;
+                MoveView(view.X, view.Y);
+            }
             if (!renderDone)
-                ComputeDraw(gameTime, new Rectangle(0, 0, destRect.Width, destRect.Height));
+                ComputeDraw(gameTime, View);
             sBatch.Draw(RenderTarget, destRect, Color.White);
 
             renderDone = false;
+        }
+
+        public void MoveView(int xOff, int yOff)
+        {
+            view.X += xOff;
+            view.Y += yOff;
+            if (view.X < 0) view.X = 0;
+            if (view.X > Tile.Width * Width - view.Width) view.X = Tile.Width * Width - view.Width;
+            if (view.Y < 0) view.Y = 0;
+            if (view.Y > Tile.Height * Height - view.Height) view.Y = Tile.Height * Height - view.Height;
         }
 
         public Tile GetTile(int x, int y)

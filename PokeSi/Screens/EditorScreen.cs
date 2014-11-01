@@ -763,6 +763,11 @@ namespace PokeSi.Screens
             UpdateEntityDataControls();
             UpdateLocTileDataControls();
 
+            if (Input.MiddleButton.Down)
+            {
+                World.MoveView(-Input.XDelta, -Input.YDelta);
+            }
+
             if (!Input.LeftButton.Down)
                 leftButtonRealsed = true;
             if (Input.LeftButton.Down && leftButtonRealsed)
@@ -771,8 +776,8 @@ namespace PokeSi.Screens
                 if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel)
                 {
                     Tile selectedTile = Tile.UnLocatedTile[tileList.SelectedItem];
-                    int x = (Input.X - worldBound.X) / Tile.Width;
-                    int y = (Input.Y - worldBound.Y) / Tile.Height;
+                    int x = (Input.X - worldBound.X + World.View.X) / Tile.Width;
+                    int y = (Input.Y - worldBound.Y + World.View.Y) / Tile.Height;
                     if (worldBound.Contains(Input.X, Input.Y) && (lastXTileSet != x || lastYTileSet != y))
                         World.SetTile(x, y, selectedTile);
                     lastXTileSet = x;
@@ -790,8 +795,8 @@ namespace PokeSi.Screens
                     if (entityToPlace != null)
                     {
                         Vector2 pos = Vector2.Zero;
-                        pos.X = Input.X - worldBound.X;
-                        pos.Y = Input.Y - worldBound.Y;
+                        pos.X = Input.X - worldBound.X + World.View.X;
+                        pos.Y = Input.Y - worldBound.Y + World.View.Y;
                         entityToPlace.Position = pos;
                         World.Entities.Add(World.GetNextEntityId(), entityToPlace);
                         entityToPlace = null;
@@ -800,8 +805,8 @@ namespace PokeSi.Screens
                     if (locTileToPlace != null)
                     {
                         Vector2 pos = Vector2.Zero;
-                        pos.X = (Input.X - worldBound.X) / Tile.Width;
-                        pos.Y = (Input.Y - worldBound.Y) / Tile.Height;
+                        pos.X = (Input.X - worldBound.X + World.View.X) / Tile.Width;
+                        pos.Y = (Input.Y - worldBound.Y + World.View.Y) / Tile.Height;
                         World.SetTile((int)pos.X, (int)pos.Y, locTileToPlace);
                         locTileToPlace = null;
                     }
@@ -811,7 +816,7 @@ namespace PokeSi.Screens
                         dragingElement = (IMoveable)selectedEntity;
                         dragingStartPos = selectedEntity.Position;
                     }
-                    else if (selectedLocTile != null && selectedLocTile is IMoveable && selectedLocTile.GetDestinationRect((int)selectedLocTile.X, (int)selectedLocTile.Y).Contains(Input.X, Input.Y))
+                    else if (selectedLocTile != null && selectedLocTile is IMoveable && selectedLocTile.Bound.Contains(Input.X, Input.Y))
                     {
                         dragingElement = (IMoveable)selectedLocTile;
                         dragingStartPos = selectedLocTile.Position;
@@ -835,13 +840,13 @@ namespace PokeSi.Screens
                             }
                         }
                     }
-                    if(!foundOne)
+                    if (!foundOne)
                     {
                         selectedEntity = null;
                         ReconstructEntityDataPanel();
                     }
                     foundOne = false;
-                    Tile tile = World.GetTile(x / Tile.Width, y / Tile.Height);
+                    Tile tile = World.GetTile((x + World.View.X) / Tile.Width, (y + World.View.Y) / Tile.Height);
                     if (tile is LocatedTile && tile is IBounded)
                     {
                         IBounded bounded = (IBounded)tile;
@@ -852,7 +857,7 @@ namespace PokeSi.Screens
                             foundOne = true;
                         }
                     }
-                    if(!foundOne && selectedLocTile != dragingElement)
+                    if (!foundOne && selectedLocTile != dragingElement)
                     {
                         selectedLocTile = null;
                         ReconstructLocTileDataPanel();
@@ -867,14 +872,14 @@ namespace PokeSi.Screens
                     {
                         if (dragingElement is Entity)
                         {
-                            dragingElement.X = Input.X - worldBound.X;
-                            dragingElement.Y = Input.Y - worldBound.Y;
+                            dragingElement.X = Input.X - worldBound.X + World.View.X;
+                            dragingElement.Y = Input.Y - worldBound.Y + World.View.Y;
                             ReconstructEntityDataPanel();
                         }
                         if (dragingElement is LocatedTile)
                         {
                             LocatedTile tile = (LocatedTile)dragingElement;
-                            World.SetTile((Input.X - worldBound.X) / Tile.Width, (Input.Y - worldBound.Y) / Tile.Height, tile);
+                            World.SetTile((Input.X - worldBound.X + World.View.X) / Tile.Width, (Input.Y - worldBound.Y + World.View.Y) / Tile.Height, tile);
                             ReconstructLocTileDataPanel();
                         }
                         dragingElement = null;
@@ -959,32 +964,40 @@ namespace PokeSi.Screens
             if (tileList.SelectedItem != null && tabPanel.CurrentPanel == tilePanel && worldBound.Contains(Input.X, Input.Y))
             {
                 Tile selectedTile = Tile.UnLocatedTile[tileList.SelectedItem];
-                int x = (Input.X - worldBound.X) / Tile.Width;
-                int y = (Input.Y - worldBound.Y) / Tile.Height;
-                selectedTile.Draw(gameTime, spriteBatch, x, y, selectedTile.GetDestinationRect(x, y));
+                int x = (Input.X - worldBound.X + World.View.X) / Tile.Width;
+                int y = (Input.Y - worldBound.Y + World.View.Y) / Tile.Height;
+                selectedTile.Draw(gameTime, spriteBatch, x, y, selectedTile.GetDestinationRect(x, y, World.View.X, World.View.Y));
             }
             // Draw entity in placement
             if (entityToPlace != null)
             {
-                entityToPlace.X = Input.X - worldBound.X;
-                entityToPlace.Y = Input.Y - worldBound.Y;
+                entityToPlace.X = Input.X - worldBound.X + World.View.X;
+                entityToPlace.Y = Input.Y - worldBound.Y + World.View.Y;
                 entityToPlace.Draw(gameTime, spriteBatch);
+            }
+            // Draw LocTile to place
+            if (locTileToPlace != null && worldBound.Contains(Input.X, Input.Y))
+            {
+                int x = (Input.X - worldBound.X + World.View.X) / Tile.Width;
+                int y = (Input.Y - worldBound.Y + World.View.Y) / Tile.Height;
+                locTileToPlace.MoveTo(x, y);
+                locTileToPlace.Draw(gameTime, spriteBatch, x, y, locTileToPlace.GetDestinationRect(x, y, World.View.X, World.View.Y));
             }
             // Draw draging element
             if (dragingElement != null)
             {
                 if (dragingElement is Entity)
                 {
-                    dragingElement.X = Input.X - worldBound.X;
-                    dragingElement.Y = Input.Y - worldBound.Y;
+                    dragingElement.X = Input.X - worldBound.X + World.View.X;
+                    dragingElement.Y = Input.Y - worldBound.Y + World.View.Y;
                     ((Entity)dragingElement).Draw(gameTime, spriteBatch);
                 }
                 if (dragingElement is LocatedTile)
                 {
-                    dragingElement.X = (Input.X - worldBound.X) / Tile.Width;
-                    dragingElement.Y = (Input.Y - worldBound.Y) / Tile.Height;
+                    dragingElement.X = (Input.X - worldBound.X + World.View.X) / Tile.Width;
+                    dragingElement.Y = (Input.Y - worldBound.Y + World.View.Y) / Tile.Height;
                     LocatedTile tile = (LocatedTile)dragingElement;
-                    tile.Draw(gameTime, spriteBatch, tile.GetDestinationRect((int)tile.X, (int)tile.Y));
+                    tile.Draw(gameTime, spriteBatch, tile.GetDestinationRect((int)tile.X, (int)tile.Y, World.View.X, World.View.Y));
                 }
             }
         }

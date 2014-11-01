@@ -17,7 +17,7 @@ namespace PokeSi.Map.Tiles
         public float X { get { return x; } set { x = (int)value; } }
         public float Y { get { return y; } set { y = (int)value; } }
         public Vector2 Position { get { return new Vector2(X, Y); } set { X = value.X; Y = value.Y; } }
-        public Rectangle Bound { get { return GetDestinationRect(x, y); } }
+        public Rectangle Bound { get { return GetDestinationRect(x, y, World.View.X, World.View.Y); } }
 
         public LocatedTile(World world, int x, int y)
             : base(world)
